@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    
+    <!-- Left Column: Listing Details -->
+    <div class="glass-card">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;
+                    background: {% if listing.type == 'offer' %}rgba(16, 185, 129, 0.2){% else %}rgba(79, 70, 229, 0.2){% endif %}; 
+                    color: {% if listing.type == 'offer' %}var(--accent-green){% else %}var(--accent-purple){% endif %};">
+                    {{ listing.type }}
+                </span>
+                <span style="font-size: 0.9rem; color: var(--text-muted); margin-left: 10px;">
+                    <i class="fa-solid fa-tag"></i> {{ listing.category }}
+                </span>
+                <h1 style="margin-top: 10px; font-size: 2rem;">{{ listing.title }}</h1>
+            </div>
+            
+            <div style="text-align: right;">
+                <div style="background: var(--accent-purple); padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                    {{ listing.credits }} <i class="fa-solid fa-coins"></i>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-location-dot"></i> {{ listing.ward }}
+                </div>
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 10px; color: var(--text-muted);">Description</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap;">{{ listing.description }}</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 15px;">
+            {% if current_user.is_authenticated and current_user.id == listing.user_id %}
+                <a href="{{ url_for('edit_listing', id=listing.id) }}" class="btn-primary" style="background: rgba(255,255,255,0.1); text-decoration: none;"><i class="fa-solid fa-pen"></i> Edit Listing</a>
+                <a href="{{ url_for('delete_listing', id=listing.id) }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); text-decoration: none;" onclick="return confirm('Are you sure you want to delete this listing?');"><i class="fa-solid fa-trash"></i> Delete</a>
+            {% else %}
+                <form action="{{ url_for('request_exchange', id=listing.id) }}" method="POST">
+                    <button type="submit" class="btn-primary" style="padding: 12px 24px; font-size: 1.1rem;"><i class="fa-solid fa-handshake"></i> Send Exchange Request</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Author Info -->
+    <div>
+        <div class="glass-card" style="text-align: center;">
+            <h3 style="margin-bottom: 20px; color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Posted By</h3>
+            
+            <img src="https://api.dicebear.com/7.x/{{ author.avatar_style }}/svg?seed={{ author.avatar_seed or author.name }}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; background: var(--glass-bg); margin-bottom: 15px; border: 2px solid var(--glass-border);">
+            
+            <h2 style="font-size: 1.5rem; margin-bottom: 5px;">{{ author.name }}</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">
+                <i class="fa-solid fa-location-dot"></i> {{ author.ward }}
+            </p>
+            
+            <a href="{{ url_for('profile', id=author.id) }}" class="btn-primary" style="display: inline-block; box-sizing: border-box; width: 100%; text-decoration: none; background: rgba(255,255,255,0.1);"><i class="fa-solid fa-user"></i> View Profile</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

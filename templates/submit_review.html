@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="glass-card" style="text-align: center;">
+        <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-star" style="color: #fbbf24;"></i> Leave a Review</h2>
+        
+        <p style="color: var(--text-muted); margin-bottom: 20px;">
+            How was your experience with <strong>{{ reviewee.name }}</strong> for "<strong>{{ listing.title }}</strong>"?
+        </p>
+
+        <img src="https://api.dicebear.com/7.x/{{ reviewee.avatar_style }}/svg?seed={{ reviewee.avatar_seed or reviewee.name }}" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg-dark); border: 2px solid var(--accent-purple); margin-bottom: 20px;">
+
+        <form action="{{ url_for('submit_review', id=exchange.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+            
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Rating</label>
+                <select name="rating" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; font-size: 1.1rem;">
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5) - Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5) - Great</option>
+                    <option value="3">⭐⭐⭐ (3/5) - Good</option>
+                    <option value="2">⭐⭐ (2/5) - Fair</option>
+                    <option value="1">⭐ (1/5) - Poor</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Comment (Optional)</label>
+                <textarea name="comment" rows="4" placeholder="Share your experience working with them..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 10px;">
+                <button type="submit" class="btn-primary" style="flex-grow: 1; padding: 12px; font-size: 1.1rem;">Submit Review</button>
+                <a href="{{ url_for('dashboard') }}" class="btn-primary" style="background: rgba(255,255,255,0.1); padding: 12px; font-size: 1.1rem; text-decoration: none; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

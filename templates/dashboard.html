@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+    
+    <!-- Left Column: Profile & Credits -->
+    <div>
+        <div class="glass-card" style="text-align: center; margin-bottom: 20px;">
+            <!-- DiceBear AI Avatar -->
+            <img src="https://api.dicebear.com/7.x/{{ current_user.avatar_style }}/svg?seed={{ current_user.avatar_seed or current_user.name }}" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; background: var(--glass-bg); margin-bottom: 15px; border: 2px solid var(--accent-purple);">
+            
+            <h2>{{ current_user.name }}</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">
+                <i class="fa-solid fa-location-dot"></i> {{ current_user.ward }}
+            </p>
+            
+            <!-- Credits Display -->
+            <div style="background: rgba(79, 70, 229, 0.15); padding: 20px; border-radius: 12px; border: 1px solid rgba(79, 70, 229, 0.3);">
+                <h3 style="color: var(--accent-purple); font-size: 2.5rem; margin-bottom: 5px;">{{ current_user.credits }}</h3>
+                <p style="text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; color: var(--text-muted);">Community Credits</p>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3 style="margin-bottom: 15px;">Quick Actions</h3>
+            <a href="{{ url_for('post_listing') }}" class="btn-primary" style="display: block; text-align: center; margin-bottom: 10px;">Post a Skill</a>
+            <a href="{{ url_for('home') }}" class="btn-primary" style="display: block; text-align: center; background: rgba(255,255,255,0.1);">Browse Board</a>
+        </div>
+    </div>
+
+    <!-- Right Column: Activity -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- My Listings -->
+        <div class="glass-card">
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-list"></i> My Listings</h3>
+            {% for lst in my_listings %}
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin-bottom: 5px;">{{ lst.title }}</h4>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">{{ lst.status | title }} • {{ lst.exchange_count }} exchanges</span>
+                    </div>
+                    <a href="{{ url_for('view_listing', id=lst.id) }}" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; text-decoration: none;">View</a>
+                </div>
+            {% else %}
+                <div style="padding: 20px; text-align: center; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                    <p style="color: var(--text-muted);">You haven't posted any skills yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- My Exchanges -->
+        <div class="glass-card">
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-handshake"></i> Active Exchanges</h3>
+            {% for item in exchanges %}
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid {% if item.exchange.status == 'pending' %}var(--accent-purple){% else %}var(--accent-green){% endif %};">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-weight: bold;">{{ item.listing.title }}</span>
+                        <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);">{{ item.exchange.status | title }}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                        You are the <strong>{{ item.role }}</strong> with {{ item.other_user.name }}.
+                        Cost: {{ item.listing.credits }} <i class="fa-solid fa-coins"></i>
+                    </p>
+                    
+                    {% if item.exchange.status == 'pending' %}
+                        <form action="{{ url_for('complete_exchange', id=item.exchange.id) }}" method="POST">
+                            <button type="submit" class="btn-primary btn-green" style="width: 100%; padding: 8px; font-size: 0.9rem;">Mark as Done & Transfer Credits</button>
+                        </form>
+                    {% else %}
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p style="font-size: 0.85rem; color: var(--accent-green); margin: 0;"><i class="fa-solid fa-check"></i> Exchange Completed</p>
+                            <a href="{{ url_for('submit_review', id=item.exchange.id) }}" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; background: rgba(251, 191, 36, 0.2); color: #fbbf24; text-decoration: none; border: 1px solid #fbbf24;"><i class="fa-solid fa-star"></i> Leave Review</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div style="padding: 20px; text-align: center; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                    <p style="color: var(--text-muted);">No exchange activity.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Credit Transactions -->
+        <div class="glass-card">
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-clock-rotate-left"></i> Credit History</h3>
+            {% for tx in transactions %}
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--glass-border);">
+                    <span style="font-size: 0.9rem; color: var(--text-muted);">{{ tx.reason }}</span>
+                    <span style="font-weight: bold; color: {% if tx.amount > 0 %}var(--accent-green){% else %}#dc2626{% endif %};">
+                        {% if tx.amount > 0 %}+{% endif %}{{ tx.amount }}
+                    </span>
+                </div>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 10px;">No transactions yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

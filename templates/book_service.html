@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="glass-card" style="border-top: 4px solid var(--accent-green);">
+        <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-calendar-plus" style="color: var(--accent-green);"></i> Book Service</h2>
+        
+        <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h3 style="margin-bottom: 5px;">{{ service.title }}</h3>
+            <p style="color: var(--accent-green); font-weight: bold;">${{ "%.2f"|format(service.price) }} {{ service.duration }}</p>
+        </div>
+
+        <form action="{{ url_for('book_service', id=service.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Preferred Date & Time</label>
+                <input type="text" name="booking_date" required placeholder="e.g., Saturday at 2:00 PM" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Additional Notes for Provider</label>
+                <textarea name="notes" rows="4" placeholder="Describe the exact issue or what you need done..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 10px;">
+                <button type="submit" class="btn-primary btn-green" style="flex-grow: 1; padding: 12px; font-size: 1.1rem;">Send Booking Request</button>
+                <a href="{{ url_for('view_paid_service', id=service.id) }}" class="btn-primary" style="background: rgba(255,255,255,0.1); padding: 12px; font-size: 1.1rem; text-decoration: none; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

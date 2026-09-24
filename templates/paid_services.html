@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header -->
+<div class="glass-card" style="margin-bottom: 30px; text-align: center; border-bottom: 4px solid var(--accent-green);">
+    <h1 style="margin-bottom: 10px;"><i class="fa-solid fa-money-bill-wave" style="color: var(--accent-green);"></i> Hire Nearby Help</h1>
+    <p style="color: var(--text-muted);">Pay directly for professional local services. Keep the money in your community.</p>
+    
+    {% if current_user.is_authenticated %}
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('post_paid_service') }}" class="btn-primary btn-green"><i class="fa-solid fa-plus"></i> Offer a Service</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- SERVICES GRID -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    {% for service in services %}
+    <div class="glass-card" style="display: flex; flex-direction: column; border-top: 2px solid var(--accent-green);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-tag"></i> {{ service.category }}</span>
+            <div style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); padding: 5px 10px; border-radius: 6px; font-weight: bold;">
+                ${{ "%.2f"|format(service.price) }} <span style="font-size: 0.7rem; font-weight: normal;">{{ service.duration }}</span>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 10px; font-size: 1.2rem;">{{ service.title }}</h3>
+        
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            {{ service.description }}
+        </p>
+
+        <!-- Provider Info & Action -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 15px; margin-top: auto;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="https://api.dicebear.com/7.x/{{ service.provider.avatar_style }}/svg?seed={{ service.provider.avatar_seed or service.provider.name }}" style="width: 30px; height: 30px; border-radius: 50%; background: var(--bg-dark);">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">{{ service.provider.name.split(' ')[0] }}</span>
+            </div>
+            <!-- We will build this view route in the next step! -->
+            <a href="{{ url_for('view_paid_service', id=service.id) }}" class="btn-primary btn-green" style="padding: 6px 12px; font-size: 0.9rem; text-decoration: none;">View Details</a>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 50px;" class="glass-card">
+        <i class="fa-solid fa-store-slash" style="font-size: 3rem; color: var(--glass-border); margin-bottom: 15px;"></i>
+        <h3 style="color: var(--text-muted);">No services available right now.</h3>
+        <p style="margin-top: 10px; color: var(--text-muted);">Be the first to offer your professional skills!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

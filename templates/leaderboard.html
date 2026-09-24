@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="glass-card" style="text-align: center; margin-bottom: 30px; border-top: 4px solid #fbbf24;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;"><i class="fa-solid fa-trophy" style="color: #fbbf24;"></i> Community Leaderboard</h1>
+        <p style="color: var(--text-muted);">Top contributors making our neighborhood a better place.</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        {% for user in top_users %}
+        <div class="glass-card" style="display: flex; align-items: center; gap: 20px; padding: 15px 25px; 
+            {% if loop.index == 1 %}border: 2px solid #fbbf24; background: rgba(251, 191, 36, 0.05);
+            {% elif loop.index == 2 %}border: 2px solid #94a3b8; background: rgba(148, 163, 184, 0.05);
+            {% elif loop.index == 3 %}border: 2px solid #b45309; background: rgba(180, 83, 9, 0.05);{% endif %}">
+            
+            <!-- Rank & Trophy -->
+            <div style="font-size: 1.5rem; font-weight: bold; width: 40px; text-align: center;">
+                {% if loop.index == 1 %}
+                    <i class="fa-solid fa-trophy" style="color: #fbbf24;"></i>
+                {% elif loop.index == 2 %}
+                    <i class="fa-solid fa-medal" style="color: #94a3b8;"></i>
+                {% elif loop.index == 3 %}
+                    <i class="fa-solid fa-medal" style="color: #b45309;"></i>
+                {% else %}
+                    <span style="color: var(--text-muted);">#{{ loop.index }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Avatar -->
+            <img src="https://api.dicebear.com/7.x/{{ user.avatar_style }}/svg?seed={{ user.avatar_seed or user.name }}" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-dark);">
+
+            <!-- User Info -->
+            <div style="flex-grow: 1;">
+                <a href="{{ url_for('profile', id=user.id) }}" style="color: white; text-decoration: none; font-size: 1.2rem; font-weight: bold; display: block; margin-bottom: 5px;">{{ user.name }}</a>
+                <span style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ user.ward }}</span>
+            </div>
+
+            <!-- Credits -->
+            <div style="text-align: right; background: rgba(79, 70, 229, 0.15); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(79, 70, 229, 0.3);">
+                <div style="color: var(--accent-purple); font-size: 1.5rem; font-weight: bold;">{{ user.credits }}</div>
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Credits</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

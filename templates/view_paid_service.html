@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    
+    <!-- Left Column: Service Details -->
+    <div class="glass-card" style="border-top: 4px solid var(--accent-green);">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; display: block;">
+                    <i class="fa-solid fa-tag"></i> {{ service.category }}
+                </span>
+                <h1 style="font-size: 2rem;">{{ service.title }}</h1>
+            </div>
+            
+            <div style="text-align: right;">
+                <div style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 1.5rem; border: 1px solid var(--accent-green);">
+                    ${{ "%.2f"|format(service.price) }} <span style="font-size: 0.9rem; font-weight: normal; color: var(--text-muted);">{{ service.duration }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 10px; color: var(--text-muted);">Description</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap;">{{ service.description }}</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px;">
+            <div>
+                <strong style="color: var(--text-muted); display: block; margin-bottom: 5px;">Location</strong>
+                <i class="fa-solid fa-location-dot" style="color: var(--accent-green);"></i> {{ service.location }}
+            </div>
+            <div>
+                <strong style="color: var(--text-muted); display: block; margin-bottom: 5px;">Availability</strong>
+                <i class="fa-solid fa-clock" style="color: var(--accent-green);"></i> {{ service.availability }}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 15px;">
+            {% if current_user.is_authenticated and current_user.id == service.provider_id %}
+                <button class="btn-primary" style="background: rgba(255,255,255,0.1);"><i class="fa-solid fa-pen"></i> Edit Service</button>
+                <button class="btn-primary" style="background: rgba(220, 38, 38, 0.8);"><i class="fa-solid fa-trash"></i> Delete</button>
+            {% else %}
+                <a href="{{ url_for('book_service', id=service.id) }}" class="btn-primary btn-green" style="padding: 12px 24px; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Provider Info -->
+    <div>
+        <div class="glass-card" style="text-align: center;">
+            <h3 style="margin-bottom: 20px; color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Service Provider</h3>
+            
+            <img src="https://api.dicebear.com/7.x/{{ provider.avatar_style }}/svg?seed={{ provider.avatar_seed or provider.name }}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 15px; border: 2px solid var(--accent-green);">
+            
+            <h2 style="font-size: 1.5rem; margin-bottom: 5px;">{{ provider.name }}</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">
+                <i class="fa-solid fa-location-dot"></i> {{ provider.ward }}
+            </p>
+            
+            <a href="{{ url_for('profile', id=provider.id) }}" class="btn-primary" style="display: block; width: 100%; background: rgba(255,255,255,0.1); text-decoration: none; margin-bottom: 10px;"><i class="fa-solid fa-user"></i> View Profile</a>
+            <a href="{{ url_for('chat', user_id=provider.id) }}" class="btn-primary" style="display: block; width: 100%; background: rgba(255,255,255,0.1); text-decoration: none;"><i class="fa-solid fa-envelope"></i> Message</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <div class="glass-card">
+        <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-pen" style="color: var(--accent-purple);"></i> Edit Listing</h2>
+        
+        <form action="{{ url_for('edit_listing', id=listing.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Type</label>
+                    <select name="type" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="offer" {% if listing.type == 'offer' %}selected{% endif %}>I am offering a skill</option>
+                        <option value="request" {% if listing.type == 'request' %}selected{% endif %}>I am requesting help</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Category</label>
+                    <select name="category" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Home Maintenance" {% if listing.category == 'Home Maintenance' %}selected{% endif %}>Home Maintenance</option>
+                        <option value="Tutoring" {% if listing.category == 'Tutoring' %}selected{% endif %}>Tutoring & Education</option>
+                        <option value="Technology" {% if listing.category == 'Technology' %}selected{% endif %}>Technology & IT</option>
+                        <option value="Cooking & Baking" {% if listing.category == 'Cooking & Baking' %}selected{% endif %}>Cooking & Baking</option>
+                        <option value="Gardening" {% if listing.category == 'Gardening' %}selected{% endif %}>Gardening</option>
+                        <option value="Pet Care" {% if listing.category == 'Pet Care' %}selected{% endif %}>Pet Care</option>
+                        <option value="Arts & Craft" {% if listing.category == 'Arts & Craft' %}selected{% endif %}>Arts & Craft</option>
+                        <option value="Other" {% if listing.category == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Title</label>
+                <input type="text" name="title" value="{{ listing.title }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Description</label>
+                <textarea name="description" rows="5" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;">{{ listing.description }}</textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Credits</label>
+                    <input type="number" name="credits" min="1" max="100" value="{{ listing.credits }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Ward / Neighborhood</label>
+                    <input type="text" name="ward" value="{{ listing.ward }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <button type="submit" class="btn-primary" style="flex-grow: 1; padding: 12px; font-size: 1.1rem;">Save Changes</button>
+                <a href="{{ url_for('view_listing', id=listing.id) }}" class="btn-primary" style="background: rgba(255,255,255,0.1); padding: 12px; font-size: 1.1rem; text-decoration: none; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

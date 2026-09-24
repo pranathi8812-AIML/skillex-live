@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <div class="glass-card">
+        <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-pen-to-square" style="color: var(--accent-purple);"></i> Post a Skill or Request</h2>
+        
+        <form action="{{ url_for('post_listing') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Type</label>
+                    <select name="type" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="offer">I am offering a skill</option>
+                        <option value="request">I am requesting help</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Category</label>
+                    <select name="category" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Home Maintenance">Home Maintenance</option>
+                        <option value="Tutoring">Tutoring & Education</option>
+                        <option value="Technology">Technology & IT</option>
+                        <option value="Cooking & Baking">Cooking & Baking</option>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Pet Care">Pet Care</option>
+                        <option value="Arts & Craft">Arts & Craft</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Title</label>
+                <input type="text" name="title" required placeholder="e.g., Will fix leaky faucets / Need help learning Spanish" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Description</label>
+                <textarea name="description" rows="5" required placeholder="Provide details about what you are offering or what you need..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Credits</label>
+                    <input type="number" name="credits" min="1" max="100" value="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Ward / Neighborhood</label>
+                    <input type="text" name="ward" value="{{ current_user.ward }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 15px; padding: 12px; font-size: 1.1rem;">Post Listing</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

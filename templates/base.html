@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skillex - Hyperlocal Skill Exchange</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="nav-brand">
+            <i class="fa-solid fa-arrows-rotate fa-spin-pulse" style="color: var(--accent-purple);"></i>
+            Skillex
+        </a>
+        
+        <div class="nav-links">
+            <a href="{{ url_for('board') }}">Browse Skills</a>
+            <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+            
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('post_listing') }}" class="btn-primary">Post Skill</a>
+                <a href="{{ url_for('messages_inbox') }}"><i class="fa-solid fa-envelope"></i></a>
+                <a href="#"><i class="fa-solid fa-bell"></i></a>
+                <a href="{{ url_for('paid_services') }}" class="btn-primary btn-green">Hire Help</a>
+                <a href="{{ url_for('my_bookings') }}" style="color: var(--accent-green);"><i class="fa-solid fa-calendar-check"></i> Bookings</a>
+                <span style="color: var(--glass-border);">|</span>
+                {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" style="color: #ef4444;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+                    <span style="color: var(--glass-border);">|</span>
+                {% endif %}
+                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-user"></i> {{ current_user.name }}</a>
+                <a href="#">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}" class="btn-primary">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT INJECTION POINT -->
+    <main class="container fade-in-up">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- FLOATING HELP BUTTON -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button class="glass-card" style="border-radius: 50%; width: 50px; height: 50px; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-question"></i>
+        </button>
+    </div>
+
+</body>
+</html>

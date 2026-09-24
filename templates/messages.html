@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    
+    <!-- Pending Requests Section -->
+    {% if pending_requests %}
+    <div class="glass-card" style="margin-bottom: 30px; border-left: 4px solid #fbbf24;">
+        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-bell" style="color: #fbbf24;"></i> Message Requests ({{ pending_requests|length }})</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for req in pending_requests %}
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="https://api.dicebear.com/7.x/{{ req.sender.avatar_style }}/svg?seed={{ req.sender.avatar_seed or req.sender.name }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-dark);">
+                    <div>
+                        <span style="font-weight: bold; display: block;">{{ req.sender.name }}</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">wants to connect</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ url_for('handle_message_request', id=req.id, action='accept') }}" class="btn-primary btn-green" style="padding: 6px 12px; font-size: 0.9rem; text-decoration: none;"><i class="fa-solid fa-check"></i> Accept</a>
+                    <a href="{{ url_for('handle_message_request', id=req.id, action='decline') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); padding: 6px 12px; font-size: 0.9rem; text-decoration: none;"><i class="fa-solid fa-xmark"></i> Decline</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Active Chats Section -->
+    <div class="glass-card">
+        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-inbox" style="color: var(--accent-purple);"></i> Messages</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for contact in contacts %}
+            <a href="{{ url_for('chat', user_id=contact.id) }}" style="text-decoration: none; color: white;">
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px; transition: background 0.2s ease;" onmouseover="this.style.background='rgba(79, 70, 229, 0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">
+                    <img src="https://api.dicebear.com/7.x/{{ contact.avatar_style }}/svg?seed={{ contact.avatar_seed or contact.name }}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-dark);">
+                    <div>
+                        <span style="font-weight: bold; font-size: 1.1rem; display: block;">{{ contact.name }}</span>
+                        <span style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ contact.ward }}</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted);"></i>
+                </div>
+            </a>
+            {% else %}
+            <div style="padding: 30px; text-align: center;">
+                <p style="color: var(--text-muted);">Your inbox is empty.</p>
+                <a href="{{ url_for('board') }}" class="btn-primary" style="display: inline-block; margin-top: 15px; text-decoration: none;">Browse Skills to Connect</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

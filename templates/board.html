@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- FILTER BAR -->
+<div class="glass-card" style="margin-bottom: 30px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+    <h3 style="margin-right: auto;"><i class="fa-solid fa-clipboard-list" style="color: var(--accent-purple);"></i> Skill Board</h3>
+    
+    <form method="GET" action="{{ url_for('board') }}" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <select name="type" style="padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
+            <option value="">All Types</option>
+            <option value="offer">Offers Only</option>
+            <option value="request">Requests Only</option>
+        </select>
+        <select name="category" style="padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
+            <option value="">All Categories</option>
+            <option value="Home Maintenance">Home Maintenance</option>
+            <option value="Tutoring">Tutoring & Education</option>
+            <option value="Technology">Technology & IT</option>
+            <option value="Cooking & Baking">Cooking & Baking</option>
+            <option value="Gardening">Gardening</option>
+            <option value="Pet Care">Pet Care</option>
+            <option value="Arts & Craft">Arts & Craft</option>
+            <option value="Other">Other</option>
+        </select>
+        <button type="submit" class="btn-primary">Filter</button>
+        <a href="{{ url_for('board') }}" class="btn-primary" style="background: rgba(255,255,255,0.1); text-decoration: none;">Clear</a>
+    </form>
+</div>
+
+<!-- LISTINGS GRID -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    {% for listing in listings %}
+    <div class="glass-card" style="display: flex; flex-direction: column; position: relative;">
+        
+        <!-- Floating Credits Badge -->
+        <div style="position: absolute; top: -10px; right: -10px; background: var(--accent-purple); padding: 5px 12px; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            {{ listing.credits }} <i class="fa-solid fa-coins"></i>
+        </div>
+
+        <!-- Type Badge -->
+        <div style="margin-bottom: 10px;">
+            <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;
+                background: {% if listing.type == 'offer' %}rgba(16, 185, 129, 0.2){% else %}rgba(79, 70, 229, 0.2){% endif %}; 
+                color: {% if listing.type == 'offer' %}var(--accent-green){% else %}var(--accent-purple){% endif %};">
+                {{ listing.type }}
+            </span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 10px;">{{ listing.category }}</span>
+        </div>
+
+        <h3 style="margin-bottom: 10px; font-size: 1.2rem;">{{ listing.title }}</h3>
+        
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+            {{ listing.description }}
+        </p>
+
+        <!-- Card Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 15px; margin-top: auto;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                <i class="fa-solid fa-location-dot"></i> {{ listing.ward }}
+            </span>
+            <a href="{{ url_for('view_listing', id=listing.id) }}" class="btn-primary" style="padding: 6px 12px; font-size: 0.9rem; text-decoration: none;">View Details</a>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 50px;" class="glass-card">
+        <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--glass-border); margin-bottom: 15px;"></i>
+        <h3 style="color: var(--text-muted);">No listings found.</h3>
+        <p style="margin-top: 10px; color: var(--text-muted);">Be the first to post a skill or request!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

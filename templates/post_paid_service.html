@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <div class="glass-card" style="border-top: 4px solid var(--accent-green);">
+        <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-briefcase" style="color: var(--accent-green);"></i> Offer a Paid Service</h2>
+        
+        <form action="{{ url_for('post_paid_service') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Title</label>
+                    <input type="text" name="title" required placeholder="e.g., Professional Plumbing" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Category</label>
+                    <select name="category" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Home Repairs">Home Repairs</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Tutoring">Tutoring</option>
+                        <option value="Tech Support">Tech Support</option>
+                        <option value="Landscaping">Landscaping</option>
+                        <option value="Moving & Delivery">Moving & Delivery</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Description</label>
+                <textarea name="description" rows="5" required placeholder="Describe what you offer, your experience, etc..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Price (Flat or Hourly)</label>
+                    <input type="number" step="0.01" name="price" required placeholder="e.g., 50.00" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Duration / Rate</label>
+                    <select name="duration" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Per Hour">Per Hour</option>
+                        <option value="Flat Rate">Flat Rate</option>
+                        <option value="Per Day">Per Day</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Location/Ward</label>
+                    <input type="text" name="location" value="{{ current_user.ward }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Availability (e.g., Weekends, Evenings)</label>
+                <input type="text" name="availability" required placeholder="e.g., Mon-Fri after 5PM" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+            </div>
+
+            <button type="submit" class="btn-primary btn-green" style="margin-top: 15px; padding: 12px; font-size: 1.1rem;">Post Paid Service</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

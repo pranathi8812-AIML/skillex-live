@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div class="glass-card" style="text-align: center; margin-bottom: 30px; border-top: 4px solid var(--accent-green);">
+        <h1 style="margin-bottom: 10px;"><i class="fa-solid fa-calendar-days" style="color: var(--accent-green);"></i> Manage Bookings</h1>
+        <p style="color: var(--text-muted);">Track services you are providing and services you have hired.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+        
+        <!-- Left Column: Services I'm Providing (Incoming Requests) -->
+        <div class="glass-card">
+            <h3 style="margin-bottom: 20px; color: var(--accent-green);"><i class="fa-solid fa-bell"></i> Incoming Requests</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                {% for item in provider_bookings %}
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-green);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-weight: bold;">{{ item.service.title }}</span>
+                        <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);">{{ item.booking.status | title }}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
+                        <strong>Customer:</strong> <a href="{{ url_for('profile', id=item.customer.id) }}" style="color: white; text-decoration: underline;">{{ item.customer.name }}</a>
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
+                        <strong>Date:</strong> {{ item.booking.booking_date }}
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                        <strong>Notes:</strong> {{ item.booking.notes or 'None' }}
+                    </p>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        {% if item.booking.status == 'pending' %}
+                            <a href="{{ url_for('handle_booking', id=item.booking.id, action='accept') }}" class="btn-primary btn-green" style="flex-grow: 1; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Accept</a>
+                            <a href="{{ url_for('handle_booking', id=item.booking.id, action='cancel') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); flex-grow: 1; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Decline</a>
+                        {% elif item.booking.status == 'accepted' %}
+                            <a href="{{ url_for('handle_booking', id=item.booking.id, action='complete') }}" class="btn-primary btn-green" style="flex-grow: 1; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Mark Completed</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 20px;">
+                    <p style="color: var(--text-muted);">No incoming booking requests right now.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column: Services I've Hired (Outgoing Requests) -->
+        <div class="glass-card">
+            <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-file-invoice-dollar"></i> My Hired Services</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                {% for item in customer_bookings %}
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-purple);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <a href="{{ url_for('view_paid_service', id=item.service.id) }}" style="font-weight: bold; color: white; text-decoration: none;">{{ item.service.title }}</a>
+                        <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);">{{ item.booking.status | title }}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
+                        <strong>Provider:</strong> <a href="{{ url_for('profile', id=item.provider.id) }}" style="color: white; text-decoration: underline;">{{ item.provider.name }}</a>
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                        <strong>Cost:</strong> ${{ "%.2f"|format(item.service.price) }} {{ item.service.duration }}
+                    </p>
+                    
+                    {% if item.booking.status == 'pending' or item.booking.status == 'accepted' %}
+                        <a href="{{ url_for('handle_booking', id=item.booking.id, action='cancel') }}" class="btn-primary" style="display: block; background: rgba(220, 38, 38, 0.8); text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Cancel Request</a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 20px;">
+                    <p style="color: var(--text-muted);">You haven't booked any paid services yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="glass-card">
+        <h2 style="margin-bottom: 25px;"><i class="fa-solid fa-user-pen" style="color: var(--accent-purple);"></i> Edit Profile</h2>
+        
+        <form action="{{ url_for('edit_profile') }}" method="POST" style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px;">
+            
+            <!-- Left Column: Avatar Customization -->
+            <div style="text-align: center; border-right: 1px solid var(--glass-border); padding-right: 20px;">
+                <h3 style="margin-bottom: 15px; font-size: 1rem; color: var(--text-muted);">Avatar Preview</h3>
+                
+                <img id="avatar-preview" src="https://api.dicebear.com/7.x/{{ current_user.avatar_style }}/svg?seed={{ current_user.avatar_seed or current_user.name }}" alt="Avatar Preview" style="width: 150px; height: 150px; border-radius: 50%; background: var(--bg-dark); border: 3px solid var(--accent-purple); margin-bottom: 20px;">
+                
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem;">Avatar Style</label>
+                    <select name="avatar_style" id="avatar-style" onchange="updateAvatar()" style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
+                        <option value="bottts" {% if current_user.avatar_style == 'bottts' %}selected{% endif %}>Robots (Bottts)</option>
+                        <option value="avataaars" {% if current_user.avatar_style == 'avataaars' %}selected{% endif %}>People (Avataaars)</option>
+                        <option value="micah" {% if current_user.avatar_style == 'micah' %}selected{% endif %}>Minimalist (Micah)</option>
+                        <option value="identicon" {% if current_user.avatar_style == 'identicon' %}selected{% endif %}>Patterns (Identicon)</option>
+                        <option value="initials" {% if current_user.avatar_style == 'initials' %}selected{% endif %}>Initials</option>
+                    </select>
+                </div>
+
+                <div style="text-align: left;">
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem;">Custom Seed (Optional)</label>
+                    <input type="text" name="avatar_seed" id="avatar-seed" value="{{ current_user.avatar_seed or current_user.name }}" oninput="updateAvatar()" placeholder="Type anything..." style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">Type different words to generate new avatars!</small>
+                </div>
+            </div>
+
+            <!-- Right Column: Profile Details -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Display Name</label>
+                    <input type="text" name="name" id="name-input" value="{{ current_user.name }}" oninput="updateAvatar()" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Ward / Neighborhood</label>
+                    <input type="text" name="ward" value="{{ current_user.ward }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">About Me (Bio)</label>
+                    <textarea name="bio" rows="5" placeholder="Tell your neighbors a bit about yourself and your skills..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;">{{ current_user.bio or '' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: auto; padding: 12px; font-size: 1.1rem;">Save Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Vanilla JS for Live Avatar Preview -->
+<script>
+function updateAvatar() {
+    const style = document.getElementById('avatar-style').value;
+    // Use the custom seed if typed, otherwise fall back to the name input
+    let seed = document.getElementById('avatar-seed').value;
+    if (!seed || seed.trim() === '') {
+        seed = document.getElementById('name-input').value;
+    }
+    const img = document.getElementById('avatar-preview');
+    // Update the image source dynamically
+    img.src = `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
+}
+</script>
+{% endblock %}
