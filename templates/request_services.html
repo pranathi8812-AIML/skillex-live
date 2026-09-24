@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="glass-card" style="border-top: 4px solid var(--accent-green);">
+        <h2 style="margin-bottom: 5px;"><i class="fa-solid fa-hand-holding-heart" style="color: var(--accent-green);"></i> Request Nearby Help</h2>
+        <p style="color: var(--text-muted); margin-bottom: 25px;">Tell the community what help you need.</p>
+        
+        <form action="{{ url_for('request_service') }}" method="POST" style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Service Category *</label>
+                    <select name="category" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Home & Cleaning">Home & Cleaning</option>
+                        <option value="Moving & Delivery">Moving & Delivery</option>
+                        <option value="Tutoring & Education">Tutoring & Education</option>
+                        <option value="Technology & Computer Help">Technology & Computer Help</option>
+                        <option value="Cooking & Food">Cooking & Food</option>
+                        <option value="Repairs & Maintenance">Repairs & Maintenance</option>
+                        <option value="Childcare & Elderly Support">Childcare & Elderly Support</option>
+                        <option value="Pet Care">Pet Care</option>
+                        <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Event Help">Event Help</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Request Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., I need help moving furniture" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Description *</label>
+                <textarea name="description" rows="4" required placeholder="Explain exactly what help is needed..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Max Budget (₹) *</label>
+                    <input type="number" step="0.01" min="1" name="budget" required placeholder="e.g., 500" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Payment Type *</label>
+                    <select name="payment_type" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Fixed Price">Fixed Price</option>
+                        <option value="Per Hour">Per Hour</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Location / Area *</label>
+                    <input type="text" name="location" value="{{ current_user.ward }}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Preferred Date *</label>
+                    <input type="date" name="preferred_date" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; color-scheme: dark;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Preferred Time</label>
+                    <input type="time" name="preferred_time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; color-scheme: dark;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Urgency *</label>
+                    <select name="urgency" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white;">
+                        <option value="Flexible">Flexible</option>
+                        <option value="Needed Soon">Needed Soon</option>
+                        <option value="Urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Additional Details</label>
+                    <textarea name="additional_details" rows="2" placeholder="Any tools required, parking info, etc..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Contact Preference *</label>
+                    <select name="contact_preference" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; height: 100%;">
+                        <option value="Chat on Skillex">Chat on Skillex</option>
+                        <option value="Phone">Phone</option>
+                        <option value="Either">Either</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="guidelines" required style="width: 20px; height: 20px; accent-color: var(--accent-green);">
+                <label for="guidelines" style="color: var(--text-muted); font-size: 0.9rem;">I agree to communicate respectfully and follow Skillex community guidelines.</label>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 10px;">
+                <button type="submit" class="btn-primary btn-green" style="flex-grow: 1; padding: 12px; font-size: 1.1rem;">Submit Service Request</button>
+                <a href="{{ url_for('paid_services') }}" class="btn-primary" style="background: rgba(255,255,255,0.1); padding: 12px; font-size: 1.1rem; text-decoration: none; text-align: center; width: 150px;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

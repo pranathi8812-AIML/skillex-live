@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-card" style="margin-bottom: 30px;">
+    <h2 style="margin-bottom: 5px;">Offers for: "{{ req.title }}"</h2>
+    <p style="color: var(--text-muted);">
+        Status: <strong style="text-transform: uppercase; color: {% if req.status == 'open' %}var(--accent-green){% else %}var(--accent-purple){% endif %};">{{ req.status }}</strong>
+        | <a href="{{ url_for('view_service_request', id=req.id) }}" style="color: var(--accent-purple); text-decoration: none;">View Request Details</a>
+    </p>
+</div>
+
+{% if req.status == 'accepted' %}
+<div class="glass-card" style="margin-bottom: 30px; text-align: center; border: 1px solid var(--accent-green); background: rgba(16, 185, 129, 0.1);">
+    <h3 style="color: var(--accent-green); margin-bottom: 10px;"><i class="fa-solid fa-check-circle"></i> Help Request Accepted</h3>
+    <p style="color: var(--text-muted);">You have selected a helper for this request.</p>
+</div>
+{% endif %}
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+    {% for offer in offers %}
+    <div class="glass-card" style="display: flex; gap: 20px; border-left: 4px solid {% if offer.status == 'accepted' %}var(--accent-green){% else %}var(--glass-border){% endif %};">
+        <div style="text-align: center; min-width: 100px;">
+            <img src="https://api.dicebear.com/7.x/{{ offer.helper.avatar_style }}/svg?seed={{ offer.helper.avatar_seed or offer.helper.name }}" style="width: 70px; height: 70px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 10px;">
+            <a href="{{ url_for('profile', id=offer.helper.id) }}" style="display: block; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem;">{{ offer.helper.name }}</a>
+        </div>
+        <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1); text-transform: uppercase;">{{ offer.status }}</span>
+                <span style="font-weight: bold; color: var(--accent-green);">Proposed: ₹{{ "%.2f"|format(offer.proposed_price) }}</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: white; line-height: 1.5;">{{ offer.message }}</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;"><i class="fa-regular fa-clock"></i> <strong>Availability:</strong> {{ offer.availability }}</p>
+            </div>
+            
+            {% if offer.status == 'pending' and req.status == 'open' %}
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_for('handle_service_offer', id=offer.id, action='accept') }}" class="btn-primary btn-green" style="text-decoration: none; padding: 8px 15px;" onclick="return confirm('Accept this offer? All other offers will be rejected.');">Accept Offer</a>
+                <a href="{{ url_for('handle_service_offer', id=offer.id, action='reject') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); text-decoration: none; padding: 8px 15px;">Reject</a>
+            </div>
+            {% elif offer.status == 'accepted' %}
+            <a href="{{ url_for('chat', user_id=offer.helper_id) }}" class="btn-primary" style="display: inline-block; text-decoration: none;"><i class="fa-solid fa-envelope"></i> Message Helper</a>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card" style="text-align: center; padding: 40px;">
+        <p style="color: var(--text-muted);">No offers received yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

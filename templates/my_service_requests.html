@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-card" style="margin-bottom: 30px; border-top: 4px solid var(--accent-purple);">
+    <h2 style="margin-bottom: 10px;"><i class="fa-solid fa-folder-open" style="color: var(--accent-purple);"></i> My Service Requests</h2>
+    <p style="color: var(--text-muted);">Manage requests you have posted for the community.</p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 15px;">
+    {% for req in requests %}
+    <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid {% if req.status == 'open' %}var(--accent-green){% elif req.status == 'cancelled' %}#ef4444{% else %}var(--accent-purple){% endif %};">
+        <div>
+            <h3 style="margin-bottom: 5px;">{{ req.title }}</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">{{ req.category }} • Budget: ₹{{ "%.2f"|format(req.budget) }}</p>
+            <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1); text-transform: uppercase;">{{ req.status }}</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('view_service_request', id=req.id) }}" class="btn-primary" style="background: rgba(255,255,255,0.1); text-decoration: none; padding: 8px 15px;">View</a>
+            <a href="{{ url_for('view_request_offers', id=req.id) }}" class="btn-primary btn-green" style="text-decoration: none; padding: 8px 15px;">Offers</a>
+            {% if req.status == 'open' %}
+            <a href="{{ url_for('cancel_service_request', id=req.id) }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); text-decoration: none; padding: 8px 15px;" onclick="return confirm('Cancel this request?');">Cancel</a>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card" style="text-align: center; padding: 40px;">
+        <p style="color: var(--text-muted);">You haven't posted any help requests yet.</p>
+        <a href="{{ url_for('request_service') }}" class="btn-primary btn-green" style="display: inline-block; margin-top: 15px; text-decoration: none;">Request Help</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

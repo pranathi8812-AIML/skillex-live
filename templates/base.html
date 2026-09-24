@@ -26,6 +26,9 @@
                 <a href="{{ url_for('messages_inbox') }}"><i class="fa-solid fa-envelope"></i></a>
                 <a href="#"><i class="fa-solid fa-bell"></i></a>
                 <a href="{{ url_for('paid_services') }}" class="btn-primary btn-green">Hire Help</a>
+                <a href="{{ url_for('paid_services') }}" class="btn-primary btn-green">Hire Help</a>
+                <a href="{{ url_for('service_requests') }}" style="color: var(--accent-green);"><i class="fa-solid fa-hand-holding-heart"></i> Help Requests</a>
+                
                 <a href="{{ url_for('my_bookings') }}" style="color: var(--accent-green);"><i class="fa-solid fa-calendar-check"></i> Bookings</a>
                 <span style="color: var(--glass-border);">|</span>
                 {% if current_user.role == 'admin' %}

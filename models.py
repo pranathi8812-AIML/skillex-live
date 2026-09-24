@@ -94,3 +94,37 @@ class PaidBooking(db.Model):
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     completed_at = db.Column(db.DateTime, nullable=True)
+
+class ServiceRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    requester_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    budget = db.Column(db.Float, nullable=False)
+    payment_type = db.Column(db.String(50), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    preferred_date = db.Column(db.String(50), nullable=False)
+    preferred_time = db.Column(db.String(50), nullable=True)
+    urgency = db.Column(db.String(50), nullable=False)
+    additional_details = db.Column(db.Text, nullable=True)
+    contact_preference = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), default='open') # open, accepted, completed, cancelled
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationship to easily access the user who made the request
+    requester = db.relationship('User', foreign_keys=[requester_id])
+
+class ServiceOffer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    request_id = db.Column(db.Integer, db.ForeignKey('service_request.id'), nullable=False)
+    helper_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    proposed_price = db.Column(db.Float, nullable=True)
+    availability = db.Column(db.String(150), nullable=False)
+    status = db.Column(db.String(20), default='pending') # pending, accepted, rejected, withdrawn
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    helper = db.relationship('User', foreign_keys=[helper_id])
+    request = db.relationship('ServiceRequest', foreign_keys=[request_id]) 

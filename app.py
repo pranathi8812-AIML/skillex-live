@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
-from models import db, User, Listing, Exchange, CreditTransaction, Review, Message, MessageRequest, PaidService, PaidBooking
+from models import db, User, Listing, Exchange, CreditTransaction, Review, Message, MessageRequest, PaidService, PaidBooking, ServiceRequest, ServiceOffer
 from datetime import datetime
 from sqlalchemy import or_, and_
 from flask_socketio import SocketIO, emit, join_room
@@ -535,6 +535,133 @@ def handle_message(data):
         'sender_id': sender_id,
         'sent_at': datetime.utcnow().strftime('%H:%M')
     }, room=room)
+
+
+# ==========================================
+# SERVICE REQUEST ROUTES
+# ==========================================
+
+@app.route('/service-requests')
+def service_requests():
+    requests = ServiceRequest.query.filter_by(status='open').order_by(ServiceRequest.created_at.desc()).all()
+    return render_template('service_requests.html', requests=requests)
+
+@app.route('/request-service', methods=['GET', 'POST'])
+@login_required
+def request_service():
+    if request.method == 'POST':
+        new_request = ServiceRequest(
+            requester_id=current_user.id,
+            category=request.form.get('category'),
+            title=request.form.get('title'),
+            description=request.form.get('description'),
+            budget=float(request.form.get('budget')),
+            payment_type=request.form.get('payment_type'),
+            location=request.form.get('location'),
+            preferred_date=request.form.get('preferred_date'),
+            preferred_time=request.form.get('preferred_time'),
+            urgency=request.form.get('urgency'),
+            additional_details=request.form.get('additional_details'),
+            contact_preference=request.form.get('contact_preference')
+        )
+        db.session.add(new_request)
+        db.session.commit()
+        return redirect(url_for('service_requests'))
+        
+    return render_template('request_service.html')
+
+@app.route('/service-request/<int:id>')
+def view_service_request(id):
+    svc_request = ServiceRequest.query.get_or_404(id)
+    # Check if current user has already made an offer
+    existing_offer = None
+    if current_user.is_authenticated:
+        existing_offer = ServiceOffer.query.filter_by(request_id=id, helper_id=current_user.id).first()
+    return render_template('view_service_request.html', req=svc_request, existing_offer=existing_offer)
+
+@app.route('/my-service-requests')
+@login_required
+def my_service_requests():
+    my_requests = ServiceRequest.query.filter_by(requester_id=current_user.id).order_by(ServiceRequest.created_at.desc()).all()
+    return render_template('my_service_requests.html', requests=my_requests)
+
+@app.route('/service-request/<int:id>/cancel')
+@login_required
+def cancel_service_request(id):
+    svc_request = ServiceRequest.query.get_or_404(id)
+    if svc_request.requester_id == current_user.id and svc_request.status == 'open':
+        svc_request.status = 'cancelled'
+        # Withdraw all pending offers
+        offers = ServiceOffer.query.filter_by(request_id=id, status='pending').all()
+        for offer in offers:
+            offer.status = 'withdrawn'
+        db.session.commit()
+    return redirect(url_for('my_service_requests'))
+
+@app.route('/service-request/<int:id>/offer', methods=['POST'])
+@login_required
+def offer_service(id):
+    svc_request = ServiceRequest.query.get_or_404(id)
+    if svc_request.requester_id == current_user.id or svc_request.status != 'open':
+        return redirect(url_for('view_service_request', id=id))
+        
+    new_offer = ServiceOffer(
+        request_id=id,
+        helper_id=current_user.id,
+        message=request.form.get('message'),
+        proposed_price=float(request.form.get('proposed_price') or svc_request.budget),
+        availability=request.form.get('availability')
+    )
+    db.session.add(new_offer)
+    db.session.commit()
+    return redirect(url_for('view_service_request', id=id))
+
+@app.route('/service-request/<int:id>/offers')
+@login_required
+def view_request_offers(id):
+    svc_request = ServiceRequest.query.get_or_404(id)
+    if svc_request.requester_id != current_user.id:
+        return redirect(url_for('home'))
+        
+    offers = ServiceOffer.query.filter_by(request_id=id).order_by(ServiceOffer.created_at.desc()).all()
+    return render_template('view_request_offers.html', req=svc_request, offers=offers)
+
+@app.route('/service-offer/<int:id>/<action>')
+@login_required
+def handle_service_offer(id, action):
+    offer = ServiceOffer.query.get_or_404(id)
+    svc_request = ServiceRequest.query.get(offer.request_id)
+    
+    if svc_request.requester_id != current_user.id or svc_request.status != 'open':
+        return redirect(url_for('view_request_offers', id=svc_request.id))
+        
+    if action == 'accept':
+        offer.status = 'accepted'
+        svc_request.status = 'accepted'
+        # Reject all other pending offers
+        other_offers = ServiceOffer.query.filter(ServiceOffer.request_id == svc_request.id, ServiceOffer.id != offer.id).all()
+        for other in other_offers:
+            if other.status == 'pending':
+                other.status = 'rejected'
+                
+        # Auto-create chat connection so they can message instantly
+        existing_conn = MessageRequest.query.filter(
+            or_(
+                and_(MessageRequest.sender_id == current_user.id, MessageRequest.receiver_id == offer.helper_id),
+                and_(MessageRequest.sender_id == offer.helper_id, MessageRequest.receiver_id == current_user.id)
+            )
+        ).first()
+        if not existing_conn:
+            new_conn = MessageRequest(sender_id=current_user.id, receiver_id=offer.helper_id, status='accepted')
+            db.session.add(new_conn)
+        elif existing_conn.status != 'accepted':
+            existing_conn.status = 'accepted'
+            
+    elif action == 'reject':
+        offer.status = 'rejected'
+        
+    db.session.commit()
+    return redirect(url_for('view_request_offers', id=svc_request.id))
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

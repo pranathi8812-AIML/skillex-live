@@ -7,8 +7,9 @@
     <p style="color: var(--text-muted);">Pay directly for professional local services. Keep the money in your community.</p>
     
     {% if current_user.is_authenticated %}
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
         <a href="{{ url_for('post_paid_service') }}" class="btn-primary btn-green"><i class="fa-solid fa-plus"></i> Offer a Service</a>
+        <a href="{{ url_for('request_service') }}" class="btn-primary" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green);"><i class="fa-solid fa-hand-holding-heart"></i> Request a Service</a>
     </div>
     {% endif %}
 </div>
