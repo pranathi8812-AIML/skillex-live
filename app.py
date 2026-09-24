@@ -5,10 +5,12 @@ from config import Config
 from models import db, User, Listing, Exchange, CreditTransaction, Review, Message, MessageRequest, PaidService, PaidBooking
 from datetime import datetime
 from sqlalchemy import or_, and_
+from flask_socketio import SocketIO, emit, join_room
 
 # Initialize the Flask application
 app = Flask(__name__)
 app.config.from_object(Config)
+socketio = SocketIO(app, cors_allowed_origins="*")
 db.init_app(app)
 
 # Initialize Flask-Login
@@ -506,6 +508,33 @@ def admin_panel():
     
     return render_template('admin.html', stats=stats, users=users)
 
-# Run the app locally
+# --- WEBSOCKET EVENTS ---
+@socketio.on('join')
+def on_join(data):
+    # Place users in a unique room based on their IDs
+    room = data['room']
+    join_room(room)
+
+@socketio.on('send_message')
+def handle_message(data):
+    sender_id = current_user.id
+    receiver_id = data['receiver_id']
+    body = data['body']
+    
+    # Save the message to the database
+    new_msg = Message(sender_id=sender_id, receiver_id=receiver_id, body=body)
+    db.session.add(new_msg)
+    db.session.commit()
+    
+    # Recreate the exact same room ID
+    room = f"chat_{min(sender_id, receiver_id)}_{max(sender_id, receiver_id)}"
+    
+    # Instantly push the message to both users in the room
+    emit('receive_message', {
+        'body': body,
+        'sender_id': sender_id,
+        'sent_at': datetime.utcnow().strftime('%H:%M')
+    }, room=room)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
