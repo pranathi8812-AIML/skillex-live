@@ -543,6 +543,7 @@ def handle_message(data):
 
 @app.route('/service-requests')
 def service_requests():
+    db.create_all()
     requests = ServiceRequest.query.filter_by(status='open').order_by(ServiceRequest.created_at.desc()).all()
     return render_template('service_requests.html', requests=requests)
 
