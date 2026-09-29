@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    
+    <!-- Left Column: Details -->
+    <div class="glass-card">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="font-size: 0.9rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-tag"></i> {{ req.category }}
+                </span>
+                <h1 style="margin-top: 10px; font-size: 2rem;">{{ req.title }}</h1>
+            </div>
+            
+            <div style="text-align: right;">
+                <div style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 1.2rem; border: 1px solid var(--accent-green);">
+                    ₹{{ "%.2f"|format(req.budget) }} <span style="font-size: 0.8rem; font-weight: normal;">{{ req.payment_type }}</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-location-dot"></i> {{ req.location }}
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+                <i class="fa-regular fa-calendar" style="color: var(--accent-purple); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Date & Time</div>
+                <div style="font-weight: bold;">{{ req.preferred_date }}<br>{{ req.preferred_time or 'Anytime' }}</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+                <i class="fa-solid fa-bolt" style="color: #fbbf24; font-size: 1.5rem; margin-bottom: 10px;"></i>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Urgency</div>
+                <div style="font-weight: bold;">{{ req.urgency }}</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+                <i class="fa-solid fa-phone" style="color: var(--accent-green); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Contact Via</div>
+                <div style="font-weight: bold;">{{ req.contact_preference }}</div>
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: var(--text-muted);">Description</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap;">{{ req.description }}</p>
+        </div>
+
+        {% if req.additional_details %}
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: var(--text-muted);">Additional Details</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap;">{{ req.additional_details }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Status Badge -->
+        <div style="text-align: center; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.05); margin-top: 20px;">
+            Status: <strong style="text-transform: uppercase; color: {% if req.status == 'open' %}var(--accent-green){% elif req.status == 'cancelled' %}#ef4444{% else %}var(--accent-purple){% endif %};">{{ req.status }}</strong>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div>
+        <!-- Requester Info -->
+        <div class="glass-card" style="text-align: center; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 20px; color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Requested By</h3>
+            <img src="https://api.dicebear.com/7.x/{{ req.requester.avatar_style }}/svg?seed={{ req.requester.avatar_seed or req.requester.name }}" style="width: 100px; height: 100px; border-radius: 50%; background: var(--glass-bg); margin-bottom: 15px; border: 2px solid var(--glass-border);">
+            <h2 style="font-size: 1.5rem; margin-bottom: 5px;">{{ req.requester.name }}</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Posted {{ req.created_at.strftime('%b %d, %Y') }}</p>
+            <a href="{{ url_for('profile', id=req.requester.id) }}" class="btn-primary" style="display: block; text-decoration: none; background: rgba(255,255,255,0.1);"><i class="fa-solid fa-user"></i> View Profile</a>
+        </div>
+
+        <!-- Action Panel -->
+        {% if current_user.is_authenticated %}
+            {% if current_user.id == req.requester_id %}
+                <div class="glass-card">
+                    <h3 style="margin-bottom: 15px;">Manage Request</h3>
+                    <a href="{{ url_for('view_request_offers', id=req.id) }}" class="btn-primary btn-green" style="display: block; text-align: center; text-decoration: none; margin-bottom: 10px;">View Offers</a>
+                    {% if req.status == 'open' %}
+                    <a href="{{ url_for('cancel_service_request', id=req.id) }}" class="btn-primary" style="display: block; background: rgba(220, 38, 38, 0.8); text-align: center; text-decoration: none;" onclick="return confirm('Are you sure you want to cancel this request?');">Cancel Request</a>
+                    {% endif %}
+                </div>
+            {% elif req.status == 'open' %}
+                {% if existing_offer %}
+                    <div class="glass-card" style="text-align: center; border-top: 4px solid var(--accent-purple);">
+                        <i class="fa-solid fa-paper-plane" style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 10px;"></i>
+                        <h3>Offer Sent</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">You have offered to help. Wait for the requester to respond.</p>
+                    </div>
+                {% else %}
+                    <div class="glass-card" style="border-top: 4px solid var(--accent-green);">
+                        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-hand-sparkles" style="color: var(--accent-green);"></i> I Can Help</h3>
+                        <form action="{{ url_for('offer_service', id=req.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                            <textarea name="message" rows="3" required placeholder="e.g., I have a truck and can help this Saturday!" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;"></textarea>
+                            <div>
+                                <label style="font-size: 0.8rem; color: var(--text-muted);">Proposed Price (₹)</label>
+                                <input type="number" step="0.01" name="proposed_price" value="{{ req.budget }}" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; color: var(--text-muted);">Your Availability</label>
+                                <input type="text" name="availability" required placeholder="e.g., Saturday morning" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                            </div>
+                            <button type="submit" class="btn-primary btn-green" style="margin-top: 10px;">Send Offer</button>
+                        </form>
+                    </div>
+                {% endif %}
+            {% elif req.status == 'accepted' and existing_offer and existing_offer.status == 'accepted' %}
+                <div class="glass-card" style="text-align: center; border-top: 4px solid var(--accent-green);">
+                    <h3 style="color: var(--accent-green); margin-bottom: 15px;">Offer Accepted!</h3>
+                    <a href="{{ url_for('chat', user_id=req.requester_id) }}" class="btn-primary" style="display: block; text-decoration: none;"><i class="fa-solid fa-envelope"></i> Message Requester</a>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="glass-card" style="text-align: center;">
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Login to offer help.</p>
+                <a href="{{ url_for('login') }}" class="btn-primary btn-green" style="display: block; text-decoration: none;">Login</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

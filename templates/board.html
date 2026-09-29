@@ -6,25 +6,27 @@
     <h3 style="margin-right: auto;"><i class="fa-solid fa-clipboard-list" style="color: var(--accent-purple);"></i> Skill Board</h3>
     
     <form method="GET" action="{{ url_for('board') }}" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <select name="type" style="padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
-            <option value="">All Types</option>
-            <option value="offer">Offers Only</option>
-            <option value="request">Requests Only</option>
-        </select>
-        <select name="category" style="padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
-            <option value="">All Categories</option>
-            <option value="Home Maintenance">Home Maintenance</option>
-            <option value="Tutoring">Tutoring & Education</option>
-            <option value="Technology">Technology & IT</option>
-            <option value="Cooking & Baking">Cooking & Baking</option>
-            <option value="Gardening">Gardening</option>
-            <option value="Pet Care">Pet Care</option>
-            <option value="Arts & Craft">Arts & Craft</option>
-            <option value="Other">Other</option>
-        </select>
-        <button type="submit" class="btn-primary">Filter</button>
-        <a href="{{ url_for('board') }}" class="btn-primary" style="background: rgba(255,255,255,0.1); text-decoration: none;">Clear</a>
-    </form>
+    <select name="type" onchange="this.form.submit()" style="padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
+        <option value="" {% if not request.args.get('type') %}selected{% endif %}>All Types</option>
+        <option value="offer" {% if request.args.get('type') == 'offer' %}selected{% endif %}>Offers Only</option>
+        <option value="request" {% if request.args.get('type') == 'request' %}selected{% endif %}>Requests Only</option>
+    </select>
+    
+    <select name="category" onchange="this.form.submit()" style="padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border);">
+        <option value="" {% if not request.args.get('category') %}selected{% endif %}>All Categories</option>
+        <option value="Home Maintenance" {% if request.args.get('category') == 'Home Maintenance' %}selected{% endif %}>Home Maintenance</option>
+        <option value="Tutoring" {% if request.args.get('category') == 'Tutoring' %}selected{% endif %}>Tutoring & Education</option>
+        <option value="Technology" {% if request.args.get('category') == 'Technology' %}selected{% endif %}>Technology & IT</option>
+        <option value="Cooking & Baking" {% if request.args.get('category') == 'Cooking & Baking' %}selected{% endif %}>Cooking & Baking</option>
+        <option value="Gardening" {% if request.args.get('category') == 'Gardening' %}selected{% endif %}>Gardening</option>
+        <option value="Pet Care" {% if request.args.get('category') == 'Pet Care' %}selected{% endif %}>Pet Care</option>
+        <option value="Arts & Craft" {% if request.args.get('category') == 'Arts & Craft' %}selected{% endif %}>Arts & Craft</option>
+        <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
+    </select>
+    
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="{{ url_for('board') }}" class="btn-primary" style="background: rgba(255,255,255,0.1); text-decoration: none;">Clear</a>
+</form>
 </div>
 
 <!-- LISTINGS GRID -->
