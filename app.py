@@ -89,7 +89,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 @app.route('/dashboard')
 @login_required

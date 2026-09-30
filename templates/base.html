@@ -36,7 +36,7 @@
                     <span style="color: var(--glass-border);">|</span>
                 {% endif %}
                 <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-user"></i> {{ current_user.name }}</a>
-                <a href="#">Logout</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             {% else %}
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('register') }}" class="btn-primary">Register</a>
