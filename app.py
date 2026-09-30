@@ -235,6 +235,8 @@ def view_listing(id):
     
     return render_template('listing.html', listing=listing, author=author)
 
+
+
 @app.route('/profile/<int:id>')
 def profile(id):
     profile_user = User.query.get_or_404(id)
