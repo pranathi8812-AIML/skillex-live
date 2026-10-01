@@ -2,6 +2,6 @@ Flask==3.0.0
 Flask-SQLAlchemy==3.1.1
 Flask-Login==0.6.3
 python-dotenv==1.0.0
-pg8000
-psycopg2-binary==2.9.9
+psycopg
+psycopg-binary
 Flask-SocketIO==5.3.6
