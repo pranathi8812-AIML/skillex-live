@@ -9,8 +9,10 @@
         <div style="height: 150px; background: linear-gradient(90deg, var(--accent-purple) 0%, var(--bg-light) 100%); opacity: 0.8;"></div>
         
         <div style="padding: 20px; display: flex; gap: 20px; align-items: flex-end; margin-top: -60px;">
-            <!-- Avatar - FIXED VARIABLE NAME AND SET DEFAULT TO MICAH -->
-            <img src="https://api.dicebear.com/7.x/{{ item.reviewer.avatar_style or 'initials' }}/svg?seed={{ item.reviewer.avatar_seed or item.reviewer.name }}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-dark); border: 1px solid var(--glass-border);">
+            
+            <!-- MAIN PROFILE AVATAR (Corrected: Uses profile_user) -->
+            <img src="https://api.dicebear.com/7.x/{{ profile_user.avatar_style or 'initials' }}/svg?seed={{ profile_user.avatar_seed or profile_user.name }}" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: var(--bg-dark);">
+            
             <div style="flex-grow: 1; padding-bottom: 10px;">
                 <h1 style="font-size: 2rem; margin-bottom: 5px;">{{ profile_user.name }}</h1>
                 <p style="color: var(--text-muted);">
@@ -87,8 +89,9 @@
     <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;">
         {% for item in reviews %}
         <div class="glass-card" style="display: flex; gap: 15px;">
-            <!-- Reviewer Avatar - UPDATED TO MICAH CHARACTER -->
-            <img src="https://api.dicebear.com/7.x/{{ item.reviewer.avatar_style or 'micah' }}/svg?seed={{ item.reviewer.avatar_seed or item.reviewer.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-dark); border: 1px solid var(--glass-border);">
+            
+            <!-- REVIEWER AVATAR (Corrected: Uses item.reviewer) -->
+            <img src="https://api.dicebear.com/7.x/{{ item.reviewer.avatar_style or 'initials' }}/svg?seed={{ item.reviewer.avatar_seed or item.reviewer.name }}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-dark); border: 1px solid var(--glass-border);">
             
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
