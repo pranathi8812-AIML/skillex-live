@@ -1,500 +1,16 @@
-```html
 {% extends 'base.html' %}
 
 {% block content %}
 
-<div class="glass-card"
-     style="max-width: 700px; margin: 0 auto; height: 75vh; display: flex; flex-direction: column;">
+<div class="glass-card" style="max-width: 700px; margin: 0 auto; height: 75vh; display: flex; flex-direction: column;">
 
     <!-- ==================== CHAT HEADER ==================== -->
-    <div style="
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--glass-border);
-    ">
-
-        <a href="{{ url_for('messages_inbox') }}"
-           style="color: var(--text-muted); font-size: 1.2rem; text-decoration: none;">
-            <i class="fa-solid fa-arrow-left"></i>
-        </a>
-
-        <img
-            src="https://api.dicebear.com/7.x/{{ other_user.avatar_style }}/svg?seed={{ other_user.avatar_seed or other_user.name }}"
-            alt="Avatar"
-            style="
-                width: 45px;
-                height: 45px;
-                border-radius: 50%;
-                background: var(--bg-dark);
-            "
-        >
-
-        <div>
-            <a href="{{ url_for('profile', id=other_user.id) }}"
-               style="
-                   color: white;
-                   font-weight: bold;
-                   font-size: 1.1rem;
-                   text-decoration: none;
-                   display: block;
-               ">
-                {{ other_user.name }}
-            </a>
-        </div>
-
-    </div>
-
-
-    <!-- ==================== CHAT MESSAGES ==================== -->
-    <div id="chat-box"
-         style="
-             flex-grow: 1;
-             overflow-y: auto;
-             padding: 20px 0;
-             display: flex;
-             flex-direction: column;
-             gap: 10px;
-         ">
-
-        {% if not connection %}
-
-            <!-- No connection -->
-            <div style="text-align: center; margin: auto;">
-
-                <i class="fa-solid fa-shield-halved"
-                   style="
-                       font-size: 3rem;
-                       color: var(--text-muted);
-                       margin-bottom: 15px;
-                   ">
-                </i>
-
-                <h3 style="margin-bottom: 10px;">
-                    Privacy First
-                </h3>
-
-                <p style="
-                    color: var(--text-muted);
-                    margin-bottom: 20px;
-                ">
-                    You must request to connect before sending messages.
-                </p>
-
-                <form
-                    action="{{ url_for('chat', user_id=other_user.id) }}"
-                    method="POST"
-                >
-                    <button
-                        type="submit"
-                        class="btn-primary"
-                        style="
-                            padding: 10px 20px;
-                            font-size: 1.1rem;
-                        "
-                    >
-                        Send Message Request
-                    </button>
-                </form>
-
-            </div>
-
-
-        {% elif connection.status == 'pending' %}
-
-            <!-- Request pending -->
-            <div style="text-align: center; margin: auto;">
-
-                <i class="fa-solid fa-clock"
-                   style="
-                       font-size: 3rem;
-                       color: #fbbf24;
-                       margin-bottom: 15px;
-                   ">
-                </i>
-
-                <h3 style="margin-bottom: 10px;">
-                    Request Sent
-                </h3>
-
-                <p style="color: var(--text-muted);">
-                    Waiting for {{ other_user.name }} to accept your request.
-                </p>
-
-            </div>
-
-
-        {% elif connection.status == 'declined' %}
-
-            <!-- Request declined -->
-            <div style="text-align: center; margin: auto;">
-
-                <i class="fa-solid fa-ban"
-                   style="
-                       font-size: 3rem;
-                       color: #dc2626;
-                       margin-bottom: 15px;
-                   ">
-                </i>
-
-                <h3 style="margin-bottom: 10px;">
-                    Request Declined
-                </h3>
-
-                <p style="color: var(--text-muted);">
-                    You cannot message this user.
-                </p>
-
-            </div>
-
-
-        {% elif connection.status == 'accepted' %}
-
-            <!-- Accepted connection -->
-
-            {% for msg in messages %}
-
-                <div
-                    class="message-bubble"
-                    style="
-                        max-width: 75%;
-                        padding: 10px 15px;
-                        border-radius: 15px;
-
-                        {% if msg.sender_id == current_user.id %}
-                            background: var(--accent-purple);
-                            align-self: flex-end;
-                            border-bottom-right-radius: 2px;
-                        {% else %}
-                            background: rgba(255,255,255,0.1);
-                            align-self: flex-start;
-                            border-bottom-left-radius: 2px;
-                        {% endif %}
-                    "
-                >
-
-                    <p style="line-height: 1.4; margin: 0;">
-                        {{ msg.body }}
-                    </p>
-
-                    <span style="
-                        font-size: 0.7rem;
-                        color: rgba(255,255,255,0.6);
-                        display: block;
-                        text-align: right;
-                        margin-top: 5px;
-                    ">
-                        {{ msg.sent_at.strftime('%H:%M') }}
-                    </span>
-
-                </div>
-
-            {% else %}
-
-                <div style="
-                    text-align: center;
-                    margin: auto;
-                    color: var(--text-muted);
-                ">
-                    Say hello to {{ other_user.name }}!
-                </div>
-
-            {% endfor %}
-
-        {% endif %}
-
-    </div>
-
-
-    <!-- ==================== CHAT INPUT ==================== -->
-
-    {% if connection and connection.status == 'accepted' %}
-
-        <form
-            id="chat-form"
-            action="{{ url_for('chat', user_id=other_user.id) }}"
-            method="POST"
-            style="
-                margin-top: 15px;
-                display: flex;
-                gap: 10px;
-            "
-        >
-
-            <input
-                id="chat-input"
-                type="text"
-                name="body"
-                required
-                placeholder="Type a message..."
-                autocomplete="off"
-                maxlength="2000"
-                style="
-                    flex-grow: 1;
-                    padding: 12px 15px;
-                    border-radius: 25px;
-                    border: 1px solid var(--glass-border);
-                    background: rgba(0,0,0,0.3);
-                    color: white;
-                    outline: none;
-                "
-            >
-
-            <button
-                type="submit"
-                class="btn-primary"
-                style="
-                    border-radius: 50%;
-                    width: 45px;
-                    height: 45px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0;
-                    flex-shrink: 0;
-                "
-            >
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-
-        </form>
-
-
-        <!-- ==================== SOCKET.IO ==================== -->
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-
-        <script>
-
-            // Connect to Socket.IO
-            const socket = io();
-
-            const chatBox = document.getElementById("chat-box");
-            const chatForm = document.getElementById("chat-form");
-            const chatInput = document.getElementById("chat-input");
-
-            // Current user
-            const currentUserId = {{ current_user.id | tojson }};
-
-            // Person we are chatting with
-            const otherUserId = {{ other_user.id | tojson }};
-
-            // Create the same room ID on both sides
-            const room =
-                `chat_${Math.min(currentUserId, otherUserId)}_${Math.max(currentUserId, otherUserId)}`;
-
-
-            // ==================== JOIN CHAT ROOM ====================
-
-            socket.emit("join", {
-                room: room
-            });
-
-
-            // ==================== RECEIVE MESSAGE ====================
-
-            socket.on("receive_message", function(data) {
-
-                const isMe = Number(data.sender_id) === Number(currentUserId);
-
-                const messageDiv = document.createElement("div");
-
-                messageDiv.style.maxWidth = "75%";
-                messageDiv.style.padding = "10px 15px";
-                messageDiv.style.borderRadius = "15px";
-
-                if (isMe) {
-
-                    messageDiv.style.background =
-                        "var(--accent-purple)";
-
-                    messageDiv.style.alignSelf =
-                        "flex-end";
-
-                    messageDiv.style.borderBottomRightRadius =
-                        "2px";
-
-                } else {
-
-                    messageDiv.style.background =
-                        "rgba(255,255,255,0.1)";
-
-                    messageDiv.style.alignSelf =
-                        "flex-start";
-
-                    messageDiv.style.borderBottomLeftRadius =
-                        "2px";
-                }
-
-
-                // Message text
-                const messageText = document.createElement("p");
-
-                messageText.style.lineHeight = "1.4";
-                messageText.style.margin = "0";
-
-                // textContent prevents HTML injection
-                messageText.textContent = data.body;
-
-
-                // Message time
-                const time = document.createElement("span");
-
-                time.style.fontSize = "0.7rem";
-                time.style.color = "rgba(255,255,255,0.6)";
-                time.style.display = "block";
-                time.style.textAlign = "right";
-                time.style.marginTop = "5px";
-
-                time.textContent = data.sent_at || "";
-
-
-                // Add elements
-                messageDiv.appendChild(messageText);
-                messageDiv.appendChild(time);
-
-                chatBox.appendChild(messageDiv);
-
-
-                // Scroll to newest message
-                chatBox.scrollTop = chatBox.scrollHeight;
-
-            });
-
-
-            // ==================== SEND MESSAGE ====================
-
-            chatForm.addEventListener("submit", function(event) {
-
-                event.preventDefault();
-
-                const body = chatInput.value.trim();
-
-                if (!body) {
-                    return;
-                }
-
-
-                socket.emit("send_message", {
-
-                    receiver_id: otherUserId,
-
-                    body: body
-
-                });
-
-
-                // Clear input
-                chatInput.value = "";
-
-                // Keep focus
-                chatInput.focus();
-
-            });
-
-
-            // ==================== SOCKET CONNECTION ERROR ====================
-
-            socket.on("connect_error", function(error) {
-
-                console.error(
-                    "Socket.IO connection error:",
-                    error
-                );
-
-            });
-
-
-            // ==================== INITIAL SCROLL ====================
-
-            window.addEventListener("load", function() {
-
-                chatBox.scrollTop =
-                    chatBox.scrollHeight;
-
-            });
-
-        </script>
-
-    {% endif %}
-
-</div>
-
-{% endblock %}
-```
-
-### One important thing
-
-Your HTML/template can be correct, but **Socket.IO will only work if your Flask backend has matching Socket.IO events**.
-
-Your Python backend needs something along these lines:
-
-```python
-@socketio.on('join')
-def handle_join(data):
-    room = data.get('room')
-
-    if room:
-        join_room(room)
-
-
-@socketio.on('send_message')
-def handle_send_message(data):
-
-    receiver_id = data.get('receiver_id')
-    body = data.get('body', '').strip()
-
-    if not body or not receiver_id:
-        return
-
-    # Save message to database here
-    message = Message(
-        sender_id=current_user.id,
-        receiver_id=receiver_id,
-        body=body
-    )
-
-    db.session.add(message)
-    db.session.commit()
-
-    room = f"chat_{min(current_user.id, receiver_id)}_{max(current_user.id, receiver_id)}"
-
-    socketio.emit(
-        'receive_message',
-        {
-            'sender_id': current_user.id,
-            'receiver_id': receiver_id,
-            'body': body,
-            'sent_at': message.sent_at.strftime('%H:%M')
-        },
-        room=room
-    )
-```
-
-And your Flask application must be started with Socket.IO, for example:
-
-```python
-if __name__ == '__main__':
-    socketio.run(app, debug=True)
-```
-
-**Don't use only**:
-
-```python
-app.run(debug=True)
-```
-
-if you expect Socket.IO to handle the chat.
-
-If you send me your **Flask `app.py` / `routes.py` Socket.IO backend code**, I can correct the frontend + backend together so the messages actually send and appear instantly.
-
-<div style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+    <div style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
         <a href="{{ url_for('messages_inbox') }}" style="color: var(--text-muted); font-size: 1.2rem; text-decoration: none;">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
 
-        <img src="https://api.dicebear.com/7.x/{{ other_user.avatar_style }}/svg?seed={{ other_user.avatar_seed or other_user.name }}" alt="Avatar" style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-dark);">
+        <img src="[https://api.dicebear.com/7.x/](https://api.dicebear.com/7.x/){{ other_user.avatar_style }}/svg?seed={{ other_user.avatar_seed or other_user.name }}" alt="Avatar" style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-dark);">
 
         <div>
             <a href="{{ url_for('profile', id=other_user.id) }}" style="color: white; font-weight: bold; font-size: 1.1rem; text-decoration: none; display: block;">
@@ -507,3 +23,155 @@ If you send me your **Flask `app.py` / `routes.py` Socket.IO backend code**, I c
             <i class="fa-solid fa-flag"></i> Report
         </a>
     </div>
+
+    <!-- ==================== CHAT MESSAGES ==================== -->
+    <div id="chat-box" style="flex-grow: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; gap: 10px;">
+
+        {% if not connection %}
+
+            <!-- No connection -->
+            <div style="text-align: center; margin: auto;">
+                <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px;">Privacy First</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">You must request to connect before sending messages.</p>
+                
+                <form action="{{ url_for('chat', user_id=other_user.id) }}" method="POST">
+                    <button type="submit" class="btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
+                        Send Message Request
+                    </button>
+                </form>
+            </div>
+
+        {% elif connection.status == 'pending' %}
+
+            <!-- Request pending -->
+            <div style="text-align: center; margin: auto;">
+                <i class="fa-solid fa-clock" style="font-size: 3rem; color: #fbbf24; margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px;">Request Sent</h3>
+                <p style="color: var(--text-muted);">Waiting for {{ other_user.name }} to accept your request.</p>
+            </div>
+
+        {% elif connection.status == 'declined' %}
+
+            <!-- Request declined -->
+            <div style="text-align: center; margin: auto;">
+                <i class="fa-solid fa-ban" style="font-size: 3rem; color: #dc2626; margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px;">Request Declined</h3>
+                <p style="color: var(--text-muted);">You cannot message this user.</p>
+            </div>
+
+        {% elif connection.status == 'accepted' %}
+
+            <!-- Accepted connection -->
+            {% for msg in messages %}
+                <div class="message-bubble" style="max-width: 75%; padding: 10px 15px; border-radius: 15px;
+                    {% if msg.sender_id == current_user.id %}
+                        background: var(--accent-purple); align-self: flex-end; border-bottom-right-radius: 2px;
+                    {% else %}
+                        background: rgba(255,255,255,0.1); align-self: flex-start; border-bottom-left-radius: 2px;
+                    {% endif %}">
+                    
+                    <p style="line-height: 1.4; margin: 0;">{{ msg.body }}</p>
+                    <span style="font-size: 0.7rem; color: rgba(255,255,255,0.6); display: block; text-align: right; margin-top: 5px;">
+                        {{ msg.sent_at.strftime('%H:%M') }}
+                    </span>
+                </div>
+            {% else %}
+                <div style="text-align: center; margin: auto; color: var(--text-muted);">
+                    Say hello to {{ other_user.name }}!
+                </div>
+            {% endfor %}
+
+        {% endif %}
+
+    </div>
+
+    <!-- ==================== CHAT INPUT ==================== -->
+    {% if connection and connection.status == 'accepted' %}
+
+        <form id="chat-form" action="{{ url_for('chat', user_id=other_user.id) }}" method="POST" style="margin-top: 15px; display: flex; gap: 10px;">
+            <input id="chat-input" type="text" name="body" required placeholder="Type a message..." autocomplete="off" maxlength="2000" style="flex-grow: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none;">
+            <button type="submit" class="btn-primary" style="border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0;">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+
+        <!-- ==================== SOCKET.IO ==================== -->
+        <script src="[https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js](https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js)"></script>
+        <script>
+            const socket = io();
+            const chatBox = document.getElementById("chat-box");
+            const chatForm = document.getElementById("chat-form");
+            const chatInput = document.getElementById("chat-input");
+
+            const currentUserId = {{ current_user.id | tojson }};
+            const otherUserId = {{ other_user.id | tojson }};
+            const room = `chat_${Math.min(currentUserId, otherUserId)}_${Math.max(currentUserId, otherUserId)}`;
+
+            socket.emit("join", { room: room });
+
+            socket.on("receive_message", function(data) {
+                const isMe = Number(data.sender_id) === Number(currentUserId);
+                const messageDiv = document.createElement("div");
+
+                messageDiv.style.maxWidth = "75%";
+                messageDiv.style.padding = "10px 15px";
+                messageDiv.style.borderRadius = "15px";
+
+                if (isMe) {
+                    messageDiv.style.background = "var(--accent-purple)";
+                    messageDiv.style.alignSelf = "flex-end";
+                    messageDiv.style.borderBottomRightRadius = "2px";
+                } else {
+                    messageDiv.style.background = "rgba(255,255,255,0.1)";
+                    messageDiv.style.alignSelf = "flex-start";
+                    messageDiv.style.borderBottomLeftRadius = "2px";
+                }
+
+                const messageText = document.createElement("p");
+                messageText.style.lineHeight = "1.4";
+                messageText.style.margin = "0";
+                messageText.textContent = data.body;
+
+                const time = document.createElement("span");
+                time.style.fontSize = "0.7rem";
+                time.style.color = "rgba(255,255,255,0.6)";
+                time.style.display = "block";
+                time.style.textAlign = "right";
+                time.style.marginTop = "5px";
+                time.textContent = data.sent_at || "";
+
+                messageDiv.appendChild(messageText);
+                messageDiv.appendChild(time);
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+
+            chatForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                const body = chatInput.value.trim();
+                if (!body) return;
+
+                socket.emit("send_message", {
+                    receiver_id: otherUserId,
+                    body: body
+                });
+
+                chatInput.value = "";
+                chatInput.focus();
+            });
+
+            socket.on("connect_error", function(error) {
+                console.error("Socket.IO connection error:", error);
+            });
+
+            window.addEventListener("load", function() {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        </script>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
