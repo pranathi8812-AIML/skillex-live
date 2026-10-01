@@ -743,6 +743,23 @@ def handle_exchange(id, action):
         
     return redirect(url_for('notifications'))
 
+@app.route('/report/<int:id>')
+@login_required
+def report_user(id):
+    reported_user = User.query.get_or_404(id)
+    
+    # Optional: If you have a Report model in models.py, you would save it here:
+    # new_report = Report(reporter_id=current_user.id, reported_id=id, reason="Chat misconduct")
+    # db.session.add(new_report)
+    # db.session.commit()
+    
+    # Disconnect their chat connection for safety
+    # connection = Connection.query.filter(...).first()
+    # if connection: db.session.delete(connection); db.session.commit()
+
+    print(f"URGENT: User {current_user.id} reported User {id} for chat misconduct.")
+    
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

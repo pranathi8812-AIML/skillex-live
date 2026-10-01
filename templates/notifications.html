@@ -18,8 +18,12 @@
                 <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1); text-transform: uppercase;">{{ ex.status }}</span>
             </div>
             <div style="display: flex; gap: 10px;">
-                <a href="{{ url_for('handle_exchange', id=ex.id, action='accept') }}" class="btn-primary btn-green" style="text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-check"></i> Accept</a>
-                <a href="{{ url_for('handle_exchange', id=ex.id, action='reject') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-xmark"></i> Reject</a>
+                {% if ex.status == 'pending' %}
+                    <a href="{{ url_for('handle_exchange', id=ex.id, action='accept') }}" class="btn-primary btn-green" style="text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-check"></i> Accept</a>
+                    <a href="{{ url_for('handle_exchange', id=ex.id, action='reject') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-xmark"></i> Reject</a>
+                {% elif ex.status == 'accepted' %}
+                    <a href="{{ url_for('chat', user_id=ex.requester.id) }}" class="btn-primary" style="background: rgba(79, 70, 229, 0.8); text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-envelope"></i> Message</a>
+                {% endif %}
             </div>
         </div>
         {% else %}

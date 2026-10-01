@@ -488,3 +488,22 @@ app.run(debug=True)
 if you expect Socket.IO to handle the chat.
 
 If you send me your **Flask `app.py` / `routes.py` Socket.IO backend code**, I can correct the frontend + backend together so the messages actually send and appear instantly.
+
+<div style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+        <a href="{{ url_for('messages_inbox') }}" style="color: var(--text-muted); font-size: 1.2rem; text-decoration: none;">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
+        <img src="https://api.dicebear.com/7.x/{{ other_user.avatar_style }}/svg?seed={{ other_user.avatar_seed or other_user.name }}" alt="Avatar" style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-dark);">
+
+        <div>
+            <a href="{{ url_for('profile', id=other_user.id) }}" style="color: white; font-weight: bold; font-size: 1.1rem; text-decoration: none; display: block;">
+                {{ other_user.name }}
+            </a>
+        </div>
+
+        <!-- NEW REPORT BUTTON -->
+        <a href="{{ url_for('report_user', id=other_user.id) }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.15); color: #ef4444; border: 1px solid #ef4444; text-decoration: none; padding: 6px 12px; font-size: 0.85rem; margin-left: auto;" onclick="return confirm('Report this user for inappropriate behavior? An admin will review the chat logs.');">
+            <i class="fa-solid fa-flag"></i> Report
+        </a>
+    </div>
