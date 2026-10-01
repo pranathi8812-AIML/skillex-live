@@ -48,6 +48,66 @@
                     <textarea name="bio" rows="5" placeholder="Tell your neighbors a bit about yourself and your skills..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; resize: vertical;">{{ current_user.bio or '' }}</textarea>
                 </div>
 
+ <!-- AVATAR STYLE SELECTOR -->
+<div style="margin-bottom: 25px;">
+    <label style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; display: block;">Select Profile Avatar Style</label>
+    
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;" id="avatar-selector">
+        
+        <!-- Option 1: Professional Initials -->
+        <label style="cursor: pointer; text-align: center;">
+            <input type="radio" name="avatar_style" value="initials" {% if current_user.avatar_style == 'initials' or not current_user.avatar_style %}checked{% endif %} style="display: none;">
+            <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.05);">
+            <span style="display: block; font-size: 0.8rem; margin-top: 8px; color: var(--text-muted);">Initials</span>
+        </label>
+
+        <!-- Option 2: Modern Abstract Shapes -->
+        <label style="cursor: pointer; text-align: center;">
+            <input type="radio" name="avatar_style" value="shapes" {% if current_user.avatar_style == 'shapes' %}checked{% endif %} style="display: none;">
+            <img src="https://api.dicebear.com/7.x/shapes/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.05);">
+            <span style="display: block; font-size: 0.8rem; margin-top: 8px; color: var(--text-muted);">Shapes</span>
+        </label>
+
+        <!-- Option 3: Tech Identicon -->
+        <label style="cursor: pointer; text-align: center;">
+            <input type="radio" name="avatar_style" value="identicon" {% if current_user.avatar_style == 'identicon' %}checked{% endif %} style="display: none;">
+            <img src="https://api.dicebear.com/7.x/identicon/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.05);">
+            <span style="display: block; font-size: 0.8rem; margin-top: 8px; color: var(--text-muted);">Tech</span>
+        </label>
+
+        <!-- Option 4: Abstract Thumbs -->
+        <label style="cursor: pointer; text-align: center;">
+            <input type="radio" name="avatar_style" value="thumbs" {% if current_user.avatar_style == 'thumbs' %}checked{% endif %} style="display: none;">
+            <img src="https://api.dicebear.com/7.x/thumbs/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.05);">
+            <span style="display: block; font-size: 0.8rem; margin-top: 8px; color: var(--text-muted);">Abstract</span>
+        </label>
+        
+    </div>
+</div>
+
+<!-- JavaScript to highlight the selected avatar -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const radios = document.querySelectorAll('input[name="avatar_style"]');
+        const images = document.querySelectorAll('#avatar-selector img');
+
+        function updateHighlight() {
+            images.forEach(img => {
+                img.style.borderColor = 'transparent';
+                img.style.transform = 'scale(1)';
+            });
+            const checked = document.querySelector('input[name="avatar_style"]:checked + img');
+            if (checked) {
+                checked.style.borderColor = 'var(--accent-indigo)';
+                checked.style.transform = 'scale(1.1)';
+            }
+        }
+
+        radios.forEach(radio => radio.addEventListener('change', updateHighlight));
+        updateHighlight(); // Run on load
+    });
+</script>               
+
                 <button type="submit" class="btn-primary" style="margin-top: auto; padding: 12px; font-size: 1.1rem;">Save Profile</button>
             </div>
         </form>

@@ -22,9 +22,6 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Create tables
-
-
 # --- ROUTES ---
 
 @app.context_processor
@@ -50,7 +47,6 @@ def register():
         # Check if email already exists
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
-            # We will replace this simple print with toast notifications later
             print("Email already exists!")
             return redirect(url_for('register'))
             
@@ -94,15 +90,12 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Fetch user's listings
     my_listings = Listing.query.filter_by(user_id=current_user.id).order_by(Listing.created_at.desc()).all()
     
-    # Fetch user's exchanges (where they are either the helper OR the requester)
     my_exchanges = Exchange.query.filter(
         (Exchange.helper_id == current_user.id) | (Exchange.requester_id == current_user.id)
     ).order_by(Exchange.created_at.desc()).all()
     
-    # Bundle the exchange data nicely for the HTML template
     exchange_data = []
     for ex in my_exchanges:
         lst = Listing.query.get(ex.listing_id)
@@ -111,7 +104,6 @@ def dashboard():
         role = "Helper" if current_user.id == ex.helper_id else "Requester"
         exchange_data.append({'exchange': ex, 'listing': lst, 'other_user': other_user, 'role': role})
         
-    # Fetch recent credit transactions
     transactions = CreditTransaction.query.filter_by(user_id=current_user.id).order_by(CreditTransaction.created_at.desc()).limit(5).all()
     
     return render_template('dashboard.html', my_listings=my_listings, exchanges=exchange_data, transactions=transactions)
@@ -120,19 +112,34 @@ def dashboard():
 @login_required
 def request_exchange(id):
     listing = Listing.query.get_or_404(id)
+    owner_id = listing.user_id
+    requester_id = current_user.id
     
+    # Check if there is ANY active exchange between these exact two users
+    active_exchange = Exchange.query.join(Listing).filter(
+        db.or_(
+            db.and_(Exchange.requester_id == requester_id, Listing.user_id == owner_id),
+            db.and_(Exchange.requester_id == owner_id, Listing.user_id == requester_id)
+        ),
+        Exchange.status.in_(['pending', 'accepted'])
+    ).first()
+    
+    # Block the request if an active exchange exists
+    if active_exchange:
+        return redirect(url_for('view_listing', id=id))
+        
     # Determine roles based on listing type
     if listing.type == 'offer':
         helper_id = listing.user_id
-        requester_id = current_user.id
+        req_id = current_user.id
     else:
         helper_id = current_user.id
-        requester_id = listing.user_id
+        req_id = listing.user_id
         
     new_exchange = Exchange(
         listing_id=listing.id,
         helper_id=helper_id,
-        requester_id=requester_id,
+        requester_id=req_id,
         status='pending'
     )
     db.session.add(new_exchange)
@@ -152,7 +159,6 @@ def complete_exchange(id):
     helper = User.query.get(exchange.helper_id)
     requester = User.query.get(exchange.requester_id)
     
-    # Atomic credit transfer logic
     if requester.credits >= listing.credits:
         requester.credits -= listing.credits
         helper.credits += listing.credits
@@ -161,7 +167,6 @@ def complete_exchange(id):
         exchange.completed_at = datetime.utcnow()
         listing.exchange_count += 1
         
-        # Record history for both users
         tx_spend = CreditTransaction(user_id=requester.id, amount=-listing.credits, reason=f"Received help for: {listing.title}")
         tx_earn = CreditTransaction(user_id=helper.id, amount=listing.credits, reason=f"Provided help for: {listing.title}")
         
@@ -176,15 +181,12 @@ def submit_review(id):
     exchange = Exchange.query.get_or_404(id)
     listing = Listing.query.get(exchange.listing_id)
     
-    # Security: Ensure only participants can review, and only after completion
     if exchange.status != 'completed' or current_user.id not in [exchange.helper_id, exchange.requester_id]:
         return redirect(url_for('dashboard'))
         
-    # Determine who is being reviewed
     reviewee_id = exchange.requester_id if current_user.id == exchange.helper_id else exchange.helper_id
     reviewee = User.query.get(reviewee_id)
     
-    # Check if a review already exists from this user for this exchange
     existing_review = Review.query.filter_by(exchange_id=exchange.id, reviewer_id=current_user.id).first()
     if existing_review:
         return redirect(url_for('dashboard'))
@@ -208,44 +210,31 @@ def submit_review(id):
 
 @app.route('/board')
 def board():
-    # Get filter arguments from the URL if they exist
     type_filter = request.args.get('type')
     category_filter = request.args.get('category')
     
-    # Start a database query for open listings
     query = Listing.query.filter_by(status='open')
     
-    # Apply filters if the user selected them
     if type_filter:
         query = query.filter_by(type=type_filter)
     if category_filter:
         query = query.filter_by(category=category_filter)
         
-    # Get the results, ordered by newest first
     listings = query.order_by(Listing.created_at.desc()).all()
-    
     return render_template('board.html', listings=listings)
 
 @app.route('/listing/<int:id>')
 def view_listing(id):
-    # Fetch the listing by its ID, return 404 if not found
     listing = Listing.query.get_or_404(id)
-    # Fetch the user who posted this listing
     author = User.query.get(listing.user_id)
-    
     return render_template('listing.html', listing=listing, author=author)
-
-
 
 @app.route('/profile/<int:id>')
 def profile(id):
     profile_user = User.query.get_or_404(id)
     user_listings = Listing.query.filter_by(user_id=profile_user.id, status='open').order_by(Listing.created_at.desc()).all()
     
-    # Fetch all reviews where this user is the reviewee
     raw_reviews = Review.query.filter_by(reviewee_id=id).order_by(Review.created_at.desc()).all()
-    
-    # Bundle reviews with the reviewer's info
     reviews = []
     for r in raw_reviews:
         reviewer = User.query.get(r.reviewer_id)
@@ -257,43 +246,36 @@ def profile(id):
 @login_required
 def edit_profile():
     if request.method == 'POST':
-        # Update the user object with new form data
         current_user.name = request.form.get('name')
         current_user.ward = request.form.get('ward')
         current_user.bio = request.form.get('bio')
-        current_user.avatar_style = request.form.get('avatar_style')
         
-        # If they left the custom seed blank, use their name as the seed
+        # Saves the chosen avatar style from the form
+        current_user.avatar_style = request.form.get('avatar_style', 'initials')
+        
         custom_seed = request.form.get('avatar_seed')
         if custom_seed and custom_seed.strip():
             current_user.avatar_seed = custom_seed.strip()
         else:
             current_user.avatar_seed = current_user.name
             
-        # Save changes to database
         db.session.commit()
-        
         return redirect(url_for('profile', id=current_user.id))
         
     return render_template('edit_profile.html')
 
 @app.route('/leaderboard')
 def leaderboard():
-    # Fetch the top 10 users with the most credits
     top_users = User.query.order_by(User.credits.desc()).limit(10).all()
     return render_template('leaderboard.html', top_users=top_users)
 
 @app.route('/messages')
 @login_required
 def messages_inbox():
-    # Fetch pending requests where the current user is the receiver
     pending_requests = MessageRequest.query.filter_by(receiver_id=current_user.id, status='pending').all()
-    
-    # Attach the sender object to each request so the HTML can display their name/avatar
     for req in pending_requests:
         req.sender = User.query.get(req.sender_id)
         
-    # Fetch accepted connections to populate the inbox list
     accepted_connections = MessageRequest.query.filter(
         and_(
             or_(MessageRequest.sender_id == current_user.id, MessageRequest.receiver_id == current_user.id),
@@ -312,7 +294,6 @@ def messages_inbox():
 @login_required
 def handle_message_request(id, action):
     req = MessageRequest.query.get_or_404(id)
-    # Ensure only the receiver can accept/decline
     if req.receiver_id == current_user.id and req.status == 'pending':
         req.status = 'accepted' if action == 'accept' else 'declined'
         db.session.commit()
@@ -326,7 +307,6 @@ def chat(user_id):
         
     other_user = User.query.get_or_404(user_id)
     
-    # Find existing connection regardless of who sent it
     connection = MessageRequest.query.filter(
         or_(
             and_(MessageRequest.sender_id == current_user.id, MessageRequest.receiver_id == user_id),
@@ -356,7 +336,6 @@ def chat(user_id):
             )
         ).order_by(Message.sent_at.asc()).all()
         
-        # Mark incoming messages as read
         for msg in messages:
             if msg.receiver_id == current_user.id and not msg.is_read:
                 msg.is_read = True
@@ -368,26 +347,17 @@ def chat(user_id):
 @login_required
 def post_listing():
     if request.method == 'POST':
-        type = request.form.get('type')
-        category = request.form.get('category')
-        title = request.form.get('title')
-        description = request.form.get('description')
-        credits = int(request.form.get('credits'))
-        ward = request.form.get('ward')
-        
         new_listing = Listing(
             user_id=current_user.id,
-            type=type,
-            category=category,
-            title=title,
-            description=description,
-            credits=credits,
-            ward=ward
+            type=request.form.get('type'),
+            category=request.form.get('category'),
+            title=request.form.get('title'),
+            description=request.form.get('description'),
+            credits=int(request.form.get('credits')),
+            ward=request.form.get('ward')
         )
-        
         db.session.add(new_listing)
         db.session.commit()
-        
         return redirect(url_for('dashboard'))
         
     return render_template('post_listing.html')
@@ -395,7 +365,6 @@ def post_listing():
 @app.route('/paid-services')
 def paid_services():
     services = PaidService.query.filter_by(status='active').order_by(PaidService.created_at.desc()).all()
-    # Attach provider info so we can show their avatar
     for service in services:
         service.provider = User.query.get(service.provider_id)
     return render_template('paid_services.html', services=services)
@@ -431,7 +400,6 @@ def view_paid_service(id):
 def book_service(id):
     service = PaidService.query.get_or_404(id)
     
-    # Security: Users cannot book their own services
     if service.provider_id == current_user.id:
         return redirect(url_for('view_paid_service', id=service.id))
         
@@ -450,7 +418,6 @@ def book_service(id):
 @app.route('/my-bookings')
 @login_required
 def my_bookings():
-    # Fetch bookings where the current user is the provider (Incoming)
     incoming = PaidBooking.query.join(PaidService).filter(PaidService.provider_id == current_user.id).order_by(PaidBooking.created_at.desc()).all()
     provider_bookings = []
     for b in incoming:
@@ -458,7 +425,6 @@ def my_bookings():
         customer = User.query.get(b.customer_id)
         provider_bookings.append({'booking': b, 'service': service, 'customer': customer})
         
-    # Fetch bookings where the current user is the customer (Outgoing)
     outgoing = PaidBooking.query.filter_by(customer_id=current_user.id).order_by(PaidBooking.created_at.desc()).all()
     customer_bookings = []
     for b in outgoing:
@@ -474,7 +440,6 @@ def handle_booking(id, action):
     booking = PaidBooking.query.get_or_404(id)
     service = PaidService.query.get(booking.service_id)
     
-    # Provider actions
     if current_user.id == service.provider_id:
         if action == 'accept' and booking.status == 'pending':
             booking.status = 'accepted'
@@ -484,7 +449,6 @@ def handle_booking(id, action):
         elif action == 'cancel' and booking.status in ['pending', 'accepted']:
             booking.status = 'cancelled'
             
-    # Customer actions
     elif current_user.id == booking.customer_id:
         if action == 'cancel' and booking.status in ['pending', 'accepted']:
             booking.status = 'cancelled'
@@ -495,7 +459,6 @@ def handle_booking(id, action):
 @app.route('/admin')
 @login_required
 def admin_panel():
-    # Security: Redirect non-admins back to home
     if current_user.role != 'admin':
         return redirect(url_for('home'))
         
@@ -505,43 +468,8 @@ def admin_panel():
         'exchanges': Exchange.query.count(),
         'paid_services': PaidService.query.count()
     }
-    
     users = User.query.order_by(User.id.asc()).all()
-    
     return render_template('admin.html', stats=stats, users=users)
-
-# --- WEBSOCKET EVENTS ---
-@socketio.on('join')
-def on_join(data):
-    # Place users in a unique room based on their IDs
-    room = data['room']
-    join_room(room)
-
-@socketio.on('send_message')
-def handle_message(data):
-    sender_id = current_user.id
-    receiver_id = data['receiver_id']
-    body = data['body']
-    
-    # Save the message to the database
-    new_msg = Message(sender_id=sender_id, receiver_id=receiver_id, body=body)
-    db.session.add(new_msg)
-    db.session.commit()
-    
-    # Recreate the exact same room ID
-    room = f"chat_{min(sender_id, receiver_id)}_{max(sender_id, receiver_id)}"
-    
-    # Instantly push the message to both users in the room
-    emit('receive_message', {
-        'body': body,
-        'sender_id': sender_id,
-        'sent_at': datetime.utcnow().strftime('%H:%M')
-    }, room=room)
-
-
-# ==========================================
-# SERVICE REQUEST ROUTES
-# ==========================================
 
 @app.route('/service-requests')
 def service_requests():
@@ -570,13 +498,11 @@ def request_service():
         db.session.add(new_request)
         db.session.commit()
         return redirect(url_for('service_requests'))
-        
     return render_template('request_service.html')
 
 @app.route('/service-request/<int:id>')
 def view_service_request(id):
     svc_request = ServiceRequest.query.get_or_404(id)
-    # Check if current user has already made an offer
     existing_offer = None
     if current_user.is_authenticated:
         existing_offer = ServiceOffer.query.filter_by(request_id=id, helper_id=current_user.id).first()
@@ -594,7 +520,6 @@ def cancel_service_request(id):
     svc_request = ServiceRequest.query.get_or_404(id)
     if svc_request.requester_id == current_user.id and svc_request.status == 'open':
         svc_request.status = 'cancelled'
-        # Withdraw all pending offers
         offers = ServiceOffer.query.filter_by(request_id=id, status='pending').all()
         for offer in offers:
             offer.status = 'withdrawn'
@@ -625,7 +550,6 @@ def view_request_offers(id):
     svc_request = ServiceRequest.query.get_or_404(id)
     if svc_request.requester_id != current_user.id:
         return redirect(url_for('home'))
-        
     offers = ServiceOffer.query.filter_by(request_id=id).order_by(ServiceOffer.created_at.desc()).all()
     return render_template('view_request_offers.html', req=svc_request, offers=offers)
 
@@ -641,13 +565,11 @@ def handle_service_offer(id, action):
     if action == 'accept':
         offer.status = 'accepted'
         svc_request.status = 'accepted'
-        # Reject all other pending offers
         other_offers = ServiceOffer.query.filter(ServiceOffer.request_id == svc_request.id, ServiceOffer.id != offer.id).all()
         for other in other_offers:
             if other.status == 'pending':
                 other.status = 'rejected'
                 
-        # Auto-create chat connection so they can message instantly
         existing_conn = MessageRequest.query.filter(
             or_(
                 and_(MessageRequest.sender_id == current_user.id, MessageRequest.receiver_id == offer.helper_id),
@@ -670,7 +592,6 @@ def handle_service_offer(id, action):
 @login_required
 def edit_listing(id):
     listing = Listing.query.get_or_404(id)
-    
     if listing.user_id != current_user.id:
         return redirect(url_for('view_listing', id=id))
         
@@ -681,85 +602,79 @@ def edit_listing(id):
         listing.description = request.form.get('description')
         listing.credits = int(request.form.get('credits'))
         listing.ward = request.form.get('ward')
-        
         db.session.commit()
         return redirect(url_for('view_listing', id=listing.id))
-        
     return render_template('edit_listing.html', listing=listing)
 
 @app.route('/listing/<int:id>/delete')
 @login_required
 def delete_listing(id):
     listing = Listing.query.get_or_404(id)
-    
     if listing.user_id == current_user.id:
         db.session.delete(listing)
         db.session.commit()
-        
     return redirect(url_for('dashboard'))
 
 @app.route('/notifications')
 @login_required
 def notifications():
     notifications_data = []
-    # Fetch all pending exchanges
     pending_reqs = Exchange.query.filter_by(status='pending').all()
-    
     for ex in pending_reqs:
-        # Manually fetch the listing using the foreign key
         lst = Listing.query.get(ex.listing_id)
-        
-        # If the current user owns this listing, add it to their notifications
         if lst and lst.user_id == current_user.id:
-            # Safely fetch the requester (handles whether your column is named user_id or requester_id)
             req_id = getattr(ex, 'requester_id', getattr(ex, 'user_id', None))
             req_user = User.query.get(req_id) if req_id else None
-            
-            # Bundle the data into a dictionary for the HTML template
             notifications_data.append({
                 'id': ex.id,
                 'status': ex.status,
                 'listing': lst,
                 'requester': req_user
             })
-            
     return render_template('notifications.html', pending_exchanges=notifications_data)
 
 @app.route('/exchange/<int:id>/<action>')
 @login_required
 def handle_exchange(id, action):
     exchange = Exchange.query.get_or_404(id)
-    
-    # Manually fetch the listing to verify ownership
     lst = Listing.query.get(exchange.listing_id)
-    
-    # Security check: Verify the current user is the owner of the requested listing
     if lst and lst.user_id == current_user.id:
         if action == 'accept':
             exchange.status = 'accepted'
         elif action == 'reject':
             exchange.status = 'rejected'
         db.session.commit()
-        
     return redirect(url_for('notifications'))
 
 @app.route('/report/<int:id>')
 @login_required
 def report_user(id):
     reported_user = User.query.get_or_404(id)
-    
-    # Optional: If you have a Report model in models.py, you would save it here:
-    # new_report = Report(reporter_id=current_user.id, reported_id=id, reason="Chat misconduct")
-    # db.session.add(new_report)
-    # db.session.commit()
-    
-    # Disconnect their chat connection for safety
-    # connection = Connection.query.filter(...).first()
-    # if connection: db.session.delete(connection); db.session.commit()
-
     print(f"URGENT: User {current_user.id} reported User {id} for chat misconduct.")
-    
     return redirect(url_for('dashboard'))
+
+# --- WEBSOCKET EVENTS ---
+@socketio.on('join')
+def on_join(data):
+    room = data['room']
+    join_room(room)
+
+@socketio.on('send_message')
+def handle_message(data):
+    sender_id = current_user.id
+    receiver_id = data['receiver_id']
+    body = data['body']
+    
+    new_msg = Message(sender_id=sender_id, receiver_id=receiver_id, body=body)
+    db.session.add(new_msg)
+    db.session.commit()
+    
+    room = f"chat_{min(sender_id, receiver_id)}_{max(sender_id, receiver_id)}"
+    emit('receive_message', {
+        'body': body,
+        'sender_id': sender_id,
+        'sent_at': datetime.utcnow().strftime('%H:%M')
+    }, room=room)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
