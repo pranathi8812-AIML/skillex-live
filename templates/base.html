@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Keep your existing meta tags, title, and FontAwesome links here -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skillex</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* ================= PREMIUM DESIGN SYSTEM ================= */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --bg-base: #0B0F19; /* Deep sophisticated navy */
-            --surface-glass: rgba(30, 41, 59, 0.4);
-            --surface-border: rgba(255, 255, 255, 0.08);
+            --bg-base: #060913; 
+            --surface-glass: rgba(17, 24, 39, 0.65);
+            --surface-border: rgba(255, 255, 255, 0.06);
             --surface-hover: rgba(255, 255, 255, 0.12);
             --accent-indigo: #6366F1;
             --accent-violet: #8B5CF6;
@@ -21,19 +21,10 @@
             --text-muted: #94A3B8;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-base);
-            /* Subtle ambient radial gradients for depth, avoiding busy images */
-            background-image: 
-                radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.08), transparent 40%),
-                radial-gradient(circle at 85% 100%, rgba(16, 185, 129, 0.08), transparent 40%);
-            background-attachment: fixed;
             color: var(--text-main);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -41,160 +32,219 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* ================= GLASS SURFACES ================= */
+        /* Ambient Animated Background Blobs */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.35;
+            animation: floatBlob 20s infinite alternate ease-in-out;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 45vw; height: 45vw; background: rgba(99, 102, 241, 0.25); }
+        .blob-2 { bottom: -20%; right: -10%; width: 55vw; height: 55vw; background: rgba(16, 185, 129, 0.15); animation-delay: -5s; animation-direction: alternate-reverse; }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, 5vh) scale(1.1); }
+        }
+
+        /* Glass Surfaces */
         .glass-card {
             background: var(--surface-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--surface-border);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 32px;
-            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* ================= PREMIUM BUTTONS ================= */
+        /* Interactive Buttons */
         .btn-primary, .btn-secondary, .btn-teal {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border: none;
-            color: white;
-            text-align: center;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 12px 24px; border-radius: 10px;
+            font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            text-decoration: none; border: none; color: white;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
-        
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--surface-border);
             color: var(--text-main);
         }
-
         .btn-teal {
             background: linear-gradient(135deg, #059669, #10B981);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
         }
 
+        /* Button Hover & Click States */
         .btn-primary:hover, .btn-teal:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            filter: brightness(1.1);
         }
-
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border-color: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+        .btn-primary:active, .btn-secondary:active, .btn-teal:active {
+            transform: translateY(1px) scale(0.97);
         }
 
-        /* ================= RESPONSIVE NAVBAR ================= */
+        /* Animated Navbar */
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 5%;
-            background: rgba(11, 15, 25, 0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--surface-border);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 5%; background: rgba(6, 9, 19, 0.8);
+            backdrop-filter: blur(24px); border-bottom: 1px solid var(--surface-border);
+            position: sticky; top: 0; z-index: 1000;
+            animation: fadeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        /* Brand Logo Animation */
         .nav-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 1.4rem; font-weight: 700; color: var(--text-main);
+            text-decoration: none; letter-spacing: -0.5px;
+        }
+        .brand-icon {
+            width: 32px; height: 32px;
+            overflow: visible;
+        }
+        .brand-part-1 { animation: exchangeSlide1 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        .brand-part-2 { animation: exchangeSlide2 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        
+        .nav-brand:hover .brand-part-1 { animation-duration: 1.5s; filter: drop-shadow(0 0 8px var(--accent-indigo)); }
+        .nav-brand:hover .brand-part-2 { animation-duration: 1.5s; filter: drop-shadow(0 0 8px var(--accent-violet)); }
+        .nav-brand:active { transform: scale(0.95); transition: 0.1s; }
+
+        @keyframes exchangeSlide1 {
+            0%, 10% { transform: translateX(0) scale(1); }
+            30% { transform: translateX(8px) scale(1.1); }
+            45% { transform: translateX(4px) scale(1); opacity: 0.8; }
+            70%, 100% { transform: translateX(0) scale(1); }
+        }
+        @keyframes exchangeSlide2 {
+            0%, 10% { transform: translateX(0) scale(1); }
+            30% { transform: translateX(-8px) scale(1.1); }
+            45% { transform: translateX(-4px) scale(1); opacity: 0.8; }
+            70%, 100% { transform: translateX(0) scale(1); }
         }
 
-        .nav-brand i { color: var(--accent-indigo); }
+        /* Nav Links with Hover Sweep */
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a.nav-item {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 0.95rem; font-weight: 500; position: relative;
+            padding: 4px 0; transition: color 0.2s ease;
+        }
+        .nav-links a.nav-item::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 2px; background: var(--accent-indigo);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+        .nav-links a.nav-item:hover { color: var(--text-main); }
+        .nav-links a.nav-item:hover::after { width: 100%; }
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
+        /* Mobile Hamburger Menu */
+        .menu-toggle {
+            display: none; background: none; border: none;
+            color: var(--text-main); font-size: 1.5rem; cursor: pointer;
         }
 
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .nav-links a:hover { color: var(--text-main); }
-
-        /* Mobile Adjustments for Navbar */
         @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                padding: 16px 20px;
-                gap: 16px;
-            }
+            .menu-toggle { display: block; }
             .nav-links {
-                width: 100%;
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 12px 16px;
+                position: absolute; top: 100%; left: 0; width: 100%;
+                flex-direction: column; background: rgba(17, 24, 39, 0.95);
+                backdrop-filter: blur(20px); border-bottom: 1px solid var(--surface-border);
+                padding: 0; max-height: 0; overflow: hidden;
+                transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .nav-links a { font-size: 0.9rem; }
-            .btn-primary { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-links.active { max-height: 400px; padding: 20px 0; }
+            .nav-links a.nav-item, .nav-links .btn-primary, .nav-links .btn-teal {
+                width: 90%; text-align: center; margin: 5px auto;
+            }
         }
 
-        /* Main Container Spacing */
+        /* Entrance Animations */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .main-content {
-            flex-grow: 1;
-            padding: 40px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
+            flex-grow: 1; padding: 40px 5%; max-width: 1400px; width: 100%; margin: 0 auto;
+        }
+
+        /* Accessibility: Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+            .blob { animation: none !important; }
         }
     </style>
 </head>
 
 <body>
-    <!-- REFINED NAVBAR -->
+    <!-- Animated Ambient Background -->
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
     <nav class="navbar">
         <a href="{{ url_for('home') }}" class="nav-brand">
-            <i class="fa-solid fa-arrows-rotate"></i> Skillex
+            <!-- Bespoke Skillex Animated Brand Mark -->
+            <svg class="brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect class="brand-part-1" x="4" y="10" width="12" height="12" rx="3" stroke="#8B5CF6" stroke-width="2.5" fill="rgba(139, 92, 246, 0.1)"/>
+                <rect class="brand-part-2" x="16" y="10" width="12" height="12" rx="3" stroke="#6366F1" stroke-width="2.5" fill="rgba(99, 102, 241, 0.1)"/>
+                <path class="brand-part-1" d="M10 16 H 16" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round"/>
+                <path class="brand-part-2" d="M16 16 H 22" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            Skillex
         </a>
-        <div class="nav-links">
-            <a href="{{ url_for('board') }}">Browse Skills</a>
+        
+        <button class="menu-toggle" onclick="document.getElementById('navMenu').classList.toggle('active')">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="nav-links" id="navMenu">
+            <a href="{{ url_for('board') }}" class="nav-item">Browse Skills</a>
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('post_listing') }}">Post Skill</a>
-                <a href="{{ url_for('paid_services') }}" class="btn-teal" style="padding: 6px 12px; border-radius: 6px; color: white;">Hire Help</a>
-                <a href="{{ url_for('notifications') }}"><i class="fa-solid fa-bell"></i></a>
-                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-user"></i> {{ current_user.name }}</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('post_listing') }}" class="nav-item">Post Skill</a>
+                <a href="{{ url_for('paid_services') }}" class="btn-teal">Hire Help</a>
+                <a href="{{ url_for('notifications') }}" class="nav-item"><i class="fa-solid fa-bell"></i></a>
+                <a href="{{ url_for('dashboard') }}" class="nav-item"><i class="fa-solid fa-user"></i> {{ current_user.name }}</a>
+                <a href="{{ url_for('logout') }}" class="nav-item">Logout</a>
             {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('login') }}" class="nav-item">Login</a>
                 <a href="{{ url_for('register') }}" class="btn-primary">Register</a>
             {% endif %}
         </div>
     </nav>
 
-    <!-- Content Block Wrapper -->
-    <main class="main-content">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Leave your existing Help Button Modal code here at the bottom -->
 </html>
