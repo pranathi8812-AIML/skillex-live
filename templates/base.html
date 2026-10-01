@@ -1,40 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <!-- Keep your existing meta tags, title, and FontAwesome links here -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skillex - Hyperlocal Skill Exchange</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ================= PREMIUM DESIGN SYSTEM ================= */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    <!-- NAVBAR -->
+        :root {
+            --bg-base: #0B0F19; /* Deep sophisticated navy */
+            --surface-glass: rgba(30, 41, 59, 0.4);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(255, 255, 255, 0.12);
+            --accent-indigo: #6366F1;
+            --accent-violet: #8B5CF6;
+            --accent-teal: #10B981;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            /* Subtle ambient radial gradients for depth, avoiding busy images */
+            background-image: 
+                radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.08), transparent 40%),
+                radial-gradient(circle at 85% 100%, rgba(16, 185, 129, 0.08), transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ================= GLASS SURFACES ================= */
+        .glass-card {
+            background: var(--surface-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        /* ================= PREMIUM BUTTONS ================= */
+        .btn-primary, .btn-secondary, .btn-teal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            color: white;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+        }
+
+        .btn-teal {
+            background: linear-gradient(135deg, #059669, #10B981);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-primary:hover, .btn-teal:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--surface-hover);
+        }
+
+        /* ================= RESPONSIVE NAVBAR ================= */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 5%;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--surface-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-brand i { color: var(--accent-indigo); }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover { color: var(--text-main); }
+
+        /* Mobile Adjustments for Navbar */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 16px 20px;
+                gap: 16px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 12px 16px;
+            }
+            .nav-links a { font-size: 0.9rem; }
+            .btn-primary { padding: 8px 16px; font-size: 0.85rem; }
+        }
+
+        /* Main Container Spacing */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- REFINED NAVBAR -->
     <nav class="navbar">
         <a href="{{ url_for('home') }}" class="nav-brand">
-            <i class="fa-solid fa-arrows-rotate fa-spin-pulse" style="color: var(--accent-purple);"></i>
-            Skillex
+            <i class="fa-solid fa-arrows-rotate"></i> Skillex
         </a>
-        
         <div class="nav-links">
             <a href="{{ url_for('board') }}">Browse Skills</a>
-            <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
-            
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('post_listing') }}" class="btn-primary">Post Skill</a>
-                <a href="{{ url_for('messages_inbox') }}"><i class="fa-solid fa-envelope"></i></a>
+                <a href="{{ url_for('post_listing') }}">Post Skill</a>
+                <a href="{{ url_for('paid_services') }}" class="btn-teal" style="padding: 6px 12px; border-radius: 6px; color: white;">Hire Help</a>
                 <a href="{{ url_for('notifications') }}"><i class="fa-solid fa-bell"></i></a>
-                <a href="{{ url_for('paid_services') }}" class="btn-primary btn-green">Hire Help</a>
-                
-                <a href="{{ url_for('service_requests') }}" style="color: var(--accent-green);"><i class="fa-solid fa-hand-holding-heart"></i> Help Requests</a>
-                
-                <a href="{{ url_for('my_bookings') }}" style="color: var(--accent-green);"><i class="fa-solid fa-calendar-check"></i> Bookings</a>
-                <span style="color: var(--glass-border);">|</span>
-                {% if current_user.role == 'admin' %}
-                    <a href="{{ url_for('admin_panel') }}" style="color: #ef4444;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                    <span style="color: var(--glass-border);">|</span>
-                {% endif %}
                 <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-user"></i> {{ current_user.name }}</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             {% else %}
@@ -44,18 +191,10 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTENT INJECTION POINT -->
-    <main class="container fade-in-up">
-        {% block content %}
-        {% endblock %}
+    <!-- Content Block Wrapper -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
     </main>
 
-    <!-- FLOATING HELP BUTTON -->
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-        <button class="glass-card" style="border-radius: 50%; width: 50px; height: 50px; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-            <i class="fa-solid fa-question"></i>
-        </button>
-    </div>
-
-</body>
+    <!-- Leave your existing Help Button Modal code here at the bottom -->
 </html>

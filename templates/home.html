@@ -1,31 +1,179 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- MODE SELECTOR CARDS -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px;">
+<style>
+    /* ================= HOME PAGE LAYOUT ================= */
+    .home-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        width: 100%;
+    }
+
+    /* Tablet & Desktop Layout */
+    @media (min-width: 768px) {
+        .home-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+        .welcome-card {
+            grid-column: 1 / -1; /* Spans full width on desktop */
+        }
+    }
+
+    /* ================= WELCOME CARD (HERO) ================= */
+    .welcome-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 48px 24px;
+        background: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.4) 100%);
+        border-top: 2px solid var(--accent-indigo);
+    }
+
+    .welcome-badge {
+        display: inline-block;
+        background: rgba(99, 102, 241, 0.15);
+        color: var(--accent-indigo);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        align-self: center;
+    }
+
+    .welcome-card h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+    }
+
+    .text-gradient {
+        background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-card p {
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        color: var(--text-muted);
+        max-width: 700px;
+        margin: 0 auto 32px auto;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* ================= MODE CARDS ================= */
+    .mode-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mode-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-4px);
+    }
+
+    .card-icon-wrapper {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .icon-indigo {
+        background: rgba(99, 102, 241, 0.15);
+        color: var(--accent-indigo);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .icon-teal {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--accent-teal);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .mode-card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .mode-card p {
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 32px;
+        flex-grow: 1; /* Pushes button to bottom */
+    }
+
+    .btn-full {
+        width: 100%;
+    }
+
+    /* Mobile padding adjustments */
+    @media (max-width: 480px) {
+        .glass-card { padding: 24px; }
+        .welcome-card { padding: 32px 20px; }
+    }
+</style>
+
+<div class="home-grid">
     
-    <!-- Exchange Skills Card -->
-    <div class="glass-card" style="text-align: center; border-top: 4px solid var(--accent-purple); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-        <i class="fa-solid fa-handshake-angle" style="font-size: 3rem; color: var(--accent-purple); margin-bottom: 15px;"></i>
-        <h2>Exchange Skills</h2>
-        <p style="color: var(--text-muted); margin-top: 10px;">Trade your talents with neighbors using community credits. No money involved.</p>
-        <a href="{{ url_for('board') }}"><button class="btn-primary" style="margin-top: 20px; width: 100%;">Go to Skill Board</button></a>
+    <!-- CARD 3: WELCOME FOCAL POINT -->
+    <div class="glass-card welcome-card">
+        <span class="welcome-badge">Welcome to Skillex</span>
+        <h1>Neighbors <span class="text-gradient">Helping</span> Neighbors</h1>
+        <p>The hyperlocal skill and labor exchange platform. Trade your talents using virtual community credits, or instantly hire local professionals for bigger jobs. Build trust and strengthen your community.</p>
+        
+        <div class="hero-actions">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('board') }}" class="btn-primary"><i class="fa-solid fa-compass"></i> Explore Skills</a>
+                <a href="{{ url_for('post_listing') }}" class="btn-secondary"><i class="fa-solid fa-pen-to-square"></i> Post a Skill</a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn-primary"><i class="fa-solid fa-user-plus"></i> Join Skillex</a>
+                <a href="{{ url_for('board') }}" class="btn-secondary"><i class="fa-solid fa-compass"></i> Browse Board</a>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- Hire Help Card -->
-    <div class="glass-card" style="text-align: center; border-top: 4px solid var(--accent-green); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-        <i class="fa-solid fa-money-bill-wave" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 15px;"></i>
-        <h2>Hire Nearby Help</h2>
-        <p style="color: var(--text-muted); margin-top: 10px;">Pay directly for professional local services like plumbing, tutoring, or cleaning.</p>
-        <a href="{{ url_for('paid_services') }}"><button class="btn-primary btn-green" style="margin-top: 20px; width: 100%;">View Paid Services</button></a>
-</div>
+    <!-- CARD 1: EXCHANGE SKILLS -->
+    <div class="glass-card mode-card">
+        <div class="card-icon-wrapper icon-indigo">
+            <i class="fa-solid fa-handshake-simple"></i>
+        </div>
+        <h2>Exchange Skills</h2>
+        <p>Trade your talents with neighbors using our secure community credit ledger. Offer what you know, request what you need—no money involved.</p>
+        <a href="{{ url_for('board') }}" class="btn-primary btn-full">Go to Skill Board</a>
+    </div>
 
-<!-- HERO SECTION -->
-<div class="glass-card" style="text-align: center; padding: 60px 20px;">
-    <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Welcome to Skillex</h1>
-    <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-        The hyperlocal community platform where neighbors support neighbors. 
-        Earn credits by helping out, and spend them when you need a hand.
-    </p>
+    <!-- CARD 2: HIRE NEARBY HELP -->
+    <div class="glass-card mode-card">
+        <div class="card-icon-wrapper icon-teal">
+            <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+        <h2>Hire Nearby Help</h2>
+        <p>Need a certified professional? Pay directly for dedicated local services like plumbing, moving, or deep cleaning. Keep the money in your community.</p>
+        <a href="{{ url_for('paid_services') }}" class="btn-teal btn-full">View Paid Services</a>
+    </div>
+
 </div>
 {% endblock %}
