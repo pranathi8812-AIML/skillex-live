@@ -698,5 +698,31 @@ def delete_listing(id):
         
     return redirect(url_for('dashboard'))
 
+@app.route('/notifications')
+@login_required
+def notifications():
+    # Fetch exchange requests where the current user owns the listing and the status is still pending
+    pending_exchanges = Exchange.query.join(Listing).filter(
+        Listing.user_id == current_user.id, 
+        Exchange.status == 'pending'
+    ).all()
+    
+    return render_template('notifications.html', pending_exchanges=pending_exchanges)
+
+@app.route('/exchange/<int:id>/<action>')
+@login_required
+def handle_exchange(id, action):
+    exchange = Exchange.query.get_or_404(id)
+    
+    # Security check: Verify the current user is the owner of the requested listing
+    if exchange.listing.user_id == current_user.id:
+        if action == 'accept':
+            exchange.status = 'accepted'
+        elif action == 'reject':
+            exchange.status = 'rejected'
+        db.session.commit()
+        
+    return redirect(url_for('notifications'))
+
 if __name__ == '__main__':
     socketio.run(app, debug=True)

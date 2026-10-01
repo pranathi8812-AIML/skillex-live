@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="glass-card" style="margin-bottom: 30px; border-top: 4px solid #fbbf24;">
+        <h2 style="margin-bottom: 10px;"><i class="fa-solid fa-bell" style="color: #fbbf24;"></i> Notifications</h2>
+        <p style="color: var(--text-muted);">Manage your incoming skill exchange requests.</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        {% for ex in pending_exchanges %}
+        <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #fbbf24;">
+            <div>
+                <h3 style="margin-bottom: 5px;">{{ ex.listing.title }}</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">
+                    Requested by: <strong>{{ ex.requester.name }}</strong>
+                </p>
+                <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1); text-transform: uppercase;">{{ ex.status }}</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_for('handle_exchange', id=ex.id, action='accept') }}" class="btn-primary btn-green" style="text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-check"></i> Accept</a>
+                <a href="{{ url_for('handle_exchange', id=ex.id, action='reject') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); text-decoration: none; padding: 8px 15px;"><i class="fa-solid fa-xmark"></i> Reject</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="glass-card" style="text-align: center; padding: 40px;">
+            <i class="fa-regular fa-bell-slash" style="font-size: 3rem; color: var(--glass-border); margin-bottom: 15px;"></i>
+            <p style="color: var(--text-muted);">You have no new exchange requests.</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Link to Message Requests -->
+    <div class="glass-card" style="margin-top: 30px; text-align: center;">
+        <p style="color: var(--text-muted); margin-bottom: 15px;">Looking for your message connection requests?</p>
+        <a href="{{ url_for('messages_inbox') }}" class="btn-primary" style="text-decoration: none;"><i class="fa-solid fa-envelope"></i> Go to Messages Inbox</a>
+    </div>
+</div>
+{% endblock %}

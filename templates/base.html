@@ -24,7 +24,7 @@
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('post_listing') }}" class="btn-primary">Post Skill</a>
                 <a href="{{ url_for('messages_inbox') }}"><i class="fa-solid fa-envelope"></i></a>
-                <a href="#"><i class="fa-solid fa-bell"></i></a>
+                <a href="{{ url_for('notifications') }}"><i class="fa-solid fa-bell"></i></a>
                 <a href="{{ url_for('paid_services') }}" class="btn-primary btn-green">Hire Help</a>
                 
                 <a href="{{ url_for('service_requests') }}" style="color: var(--accent-green);"><i class="fa-solid fa-hand-holding-heart"></i> Help Requests</a>
