@@ -6,48 +6,51 @@
         <h2 style="margin-bottom: 30px;"><i class="fa-solid fa-user-pen" style="color: var(--accent-purple);"></i> Edit Profile</h2>
         
         <form method="POST" action="{{ url_for('edit_profile') }}" style="display: flex; flex-wrap: wrap; gap: 40px;">
-            
-            <!-- LEFT COLUMN: Avatar Selection -->
+           <!-- LEFT COLUMN: Avatar Selection -->
             <div style="flex: 1; min-width: 300px;">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h4 style="color: var(--text-muted); margin-bottom: 15px;">Live Preview</h4>
-                    <img id="avatar-preview" src="https://api.dicebear.com/7.x/{{ current_user.avatar_style or 'micah' }}/svg?seed={{ current_user.avatar_seed or current_user.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <img id="avatar-preview" src="https://api.dicebear.com/7.x/initials/svg?seed={{ current_user.avatar_seed or current_user.name }}" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: var(--bg-dark);">
                 </div>
 
-                <label style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; display: block;">Choose Character Style</label>
+                <label style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; display: block;">Choose Professional Avatar</label>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" id="avatar-selector">
                     
+                    <!-- Option 1: Corporate Initials -->
                     <label style="cursor: pointer; text-align: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 2px solid transparent; transition: all 0.2s;" class="avatar-option">
-                        <input type="radio" name="avatar_style" value="micah" {% if current_user.avatar_style == 'micah' or not current_user.avatar_style %}checked{% endif %} style="display: none;">
-                        <img src="https://api.dicebear.com/7.x/micah/svg?seed={{ current_user.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" style="width: 60px; height: 60px; border-radius: 50%;">
-                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Micah</span>
+                        <input type="radio" name="avatar_style" value="initials" {% if current_user.avatar_style == 'initials' or not current_user.avatar_style %}checked{% endif %} style="display: none;">
+                        <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-dark);">
+                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Initials</span>
                     </label>
 
+                    <!-- Option 2: Concentric Rings -->
                     <label style="cursor: pointer; text-align: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 2px solid transparent; transition: all 0.2s;" class="avatar-option">
-                        <input type="radio" name="avatar_style" value="adventurer" {% if current_user.avatar_style == 'adventurer' %}checked{% endif %} style="display: none;">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ current_user.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" style="width: 60px; height: 60px; border-radius: 50%;">
-                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Adventurer</span>
+                        <input type="radio" name="avatar_style" value="rings" {% if current_user.avatar_style == 'rings' %}checked{% endif %} style="display: none;">
+                        <img src="https://api.dicebear.com/7.x/rings/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-dark);">
+                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Rings</span>
                     </label>
 
+                    <!-- Option 3: Abstract Shapes -->
                     <label style="cursor: pointer; text-align: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 2px solid transparent; transition: all 0.2s;" class="avatar-option">
-                        <input type="radio" name="avatar_style" value="open-peeps" {% if current_user.avatar_style == 'open-peeps' %}checked{% endif %} style="display: none;">
-                        <img src="https://api.dicebear.com/7.x/open-peeps/svg?seed={{ current_user.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" style="width: 60px; height: 60px; border-radius: 50%;">
-                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Peeps</span>
+                        <input type="radio" name="avatar_style" value="shapes" {% if current_user.avatar_style == 'shapes' %}checked{% endif %} style="display: none;">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-dark);">
+                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Shapes</span>
                     </label>
 
+                    <!-- Option 4: Tech Identicon -->
                     <label style="cursor: pointer; text-align: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 2px solid transparent; transition: all 0.2s;" class="avatar-option">
-                        <input type="radio" name="avatar_style" value="personas" {% if current_user.avatar_style == 'personas' %}checked{% endif %} style="display: none;">
-                        <img src="https://api.dicebear.com/7.x/personas/svg?seed={{ current_user.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" style="width: 60px; height: 60px; border-radius: 50%;">
-                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Personas</span>
+                        <input type="radio" name="avatar_style" value="identicon" {% if current_user.avatar_style == 'identicon' %}checked{% endif %} style="display: none;">
+                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed={{ current_user.name }}" style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-dark);">
+                        <span style="display: block; font-size: 0.85rem; margin-top: 8px;">Identicon</span>
                     </label>
                 </div>
 
                 <div style="margin-top: 20px;">
                     <label style="display: block; color: var(--text-muted); margin-bottom: 8px; font-size: 0.9rem;">Custom Seed (Optional)</label>
-                    <input type="text" id="avatar_seed" name="avatar_seed" value="{{ current_user.avatar_seed or current_user.name }}" style="width: 100%; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none;" placeholder="Type words to change hair/face...">
+                    <input type="text" id="avatar_seed" name="avatar_seed" value="{{ current_user.avatar_seed or current_user.name }}" style="width: 100%; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none;" placeholder="Type text to randomize pattern...">
                 </div>
-            </div>
-
+            </div> 
+           
             <!-- RIGHT COLUMN: Text Fields -->
             <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
                 
@@ -71,7 +74,6 @@
         </form>
     </div>
 </div>
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const radios = document.querySelectorAll('input[name="avatar_style"]');
@@ -81,13 +83,11 @@
         const nameInput = document.getElementById('name_input');
 
         function updatePreview() {
-            // Reset borders
             options.forEach(opt => {
                 opt.style.borderColor = 'transparent';
                 opt.style.background = 'rgba(0,0,0,0.2)';
             });
             
-            // Highlight selected
             const checkedRadio = document.querySelector('input[name="avatar_style"]:checked');
             if (checkedRadio) {
                 const parentLabel = checkedRadio.closest('label');
@@ -95,18 +95,18 @@
                 parentLabel.style.background = 'rgba(99, 102, 241, 0.15)';
             }
 
-            // Update big preview image
-            const style = checkedRadio ? checkedRadio.value : 'micah';
+            const style = checkedRadio ? checkedRadio.value : 'initials';
             const seed = seedInput.value.trim() || nameInput.value.trim() || 'default';
-            previewImg.src = `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+            // Removed the pastel backgrounds entirely for a dark, professional aesthetic
+            previewImg.src = `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
         }
 
         radios.forEach(radio => radio.addEventListener('change', updatePreview));
         seedInput.addEventListener('input', updatePreview);
         nameInput.addEventListener('input', updatePreview);
         
-        // Run once on load
         updatePreview();
     });
 </script>
+
 {% endblock %}

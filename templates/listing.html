@@ -51,8 +51,7 @@
         <div class="glass-card" style="text-align: center;">
             <h3 style="margin-bottom: 20px; color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Posted By</h3>
             
-            <img src="https://api.dicebear.com/7.x/{{ author.avatar_style }}/svg?seed={{ author.avatar_seed or author.name }}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; background: var(--glass-bg); margin-bottom: 15px; border: 2px solid var(--glass-border);">
-            
+            <img src="https://api.dicebear.com/7.x/{{ author.avatar_style or 'initials' }}/svg?seed={{ author.avatar_seed or author.name }}" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: var(--bg-dark);">
             <h2 style="font-size: 1.5rem; margin-bottom: 5px;">{{ author.name }}</h2>
             <p style="color: var(--text-muted); margin-bottom: 15px;">
                 <i class="fa-solid fa-location-dot"></i> {{ author.ward }}

@@ -251,7 +251,7 @@ def edit_profile():
         current_user.bio = request.form.get('bio')
         
         # Saves the chosen avatar style from the form
-        current_user.avatar_style = request.form.get('avatar_style', 'initials')
+       current_user.avatar_style = request.form.get('avatar_style', 'initials')
         
         custom_seed = request.form.get('avatar_seed')
         if custom_seed and custom_seed.strip():

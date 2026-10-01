@@ -10,8 +10,7 @@
         
         <div style="padding: 20px; display: flex; gap: 20px; align-items: flex-end; margin-top: -60px;">
             <!-- Avatar - FIXED VARIABLE NAME AND SET DEFAULT TO MICAH -->
-            <img src="https://api.dicebear.com/7.x/{{ profile_user.avatar_style or 'micah' }}/svg?seed={{ profile_user.avatar_seed or profile_user.name }}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: var(--bg-dark);">
-            
+            <img src="https://api.dicebear.com/7.x/{{ item.reviewer.avatar_style or 'initials' }}/svg?seed={{ item.reviewer.avatar_seed or item.reviewer.name }}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-dark); border: 1px solid var(--glass-border);">
             <div style="flex-grow: 1; padding-bottom: 10px;">
                 <h1 style="font-size: 2rem; margin-bottom: 5px;">{{ profile_user.name }}</h1>
                 <p style="color: var(--text-muted);">
