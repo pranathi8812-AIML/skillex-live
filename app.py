@@ -701,21 +701,40 @@ def delete_listing(id):
 @app.route('/notifications')
 @login_required
 def notifications():
-    # Fetch exchange requests where the current user owns the listing and the status is still pending
-    pending_exchanges = Exchange.query.join(Listing).filter(
-        Listing.user_id == current_user.id, 
-        Exchange.status == 'pending'
-    ).all()
+    notifications_data = []
+    # Fetch all pending exchanges
+    pending_reqs = Exchange.query.filter_by(status='pending').all()
     
-    return render_template('notifications.html', pending_exchanges=pending_exchanges)
+    for ex in pending_reqs:
+        # Manually fetch the listing using the foreign key
+        lst = Listing.query.get(ex.listing_id)
+        
+        # If the current user owns this listing, add it to their notifications
+        if lst and lst.user_id == current_user.id:
+            # Safely fetch the requester (handles whether your column is named user_id or requester_id)
+            req_id = getattr(ex, 'requester_id', getattr(ex, 'user_id', None))
+            req_user = User.query.get(req_id) if req_id else None
+            
+            # Bundle the data into a dictionary for the HTML template
+            notifications_data.append({
+                'id': ex.id,
+                'status': ex.status,
+                'listing': lst,
+                'requester': req_user
+            })
+            
+    return render_template('notifications.html', pending_exchanges=notifications_data)
 
 @app.route('/exchange/<int:id>/<action>')
 @login_required
 def handle_exchange(id, action):
     exchange = Exchange.query.get_or_404(id)
     
+    # Manually fetch the listing to verify ownership
+    lst = Listing.query.get(exchange.listing_id)
+    
     # Security check: Verify the current user is the owner of the requested listing
-    if exchange.listing.user_id == current_user.id:
+    if lst and lst.user_id == current_user.id:
         if action == 'accept':
             exchange.status = 'accepted'
         elif action == 'reject':
@@ -723,6 +742,7 @@ def handle_exchange(id, action):
         db.session.commit()
         
     return redirect(url_for('notifications'))
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
