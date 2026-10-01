@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -26,7 +27,6 @@ def load_user(user_id):
 
 @app.context_processor
 def inject_user():
-    # This ensures current_user is available in all HTML templates
     return dict(current_user=current_user)
 
 @app.route('/')
@@ -44,10 +44,8 @@ def register():
         password = request.form.get('password')
         ward = request.form.get('ward')
         
-        # Check if email already exists
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
-            print("Email already exists!")
             return redirect(url_for('register'))
             
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
@@ -76,7 +74,6 @@ def login():
             login_user(user)
             return redirect(url_for('home'))
         else:
-            print("Invalid email or password")
             return redirect(url_for('login'))
             
     return render_template('login.html')
@@ -115,7 +112,6 @@ def request_exchange(id):
     owner_id = listing.user_id
     requester_id = current_user.id
     
-    # Check if there is ANY active exchange between these exact two users
     active_exchange = Exchange.query.join(Listing).filter(
         db.or_(
             db.and_(Exchange.requester_id == requester_id, Listing.user_id == owner_id),
@@ -124,11 +120,9 @@ def request_exchange(id):
         Exchange.status.in_(['pending', 'accepted'])
     ).first()
     
-    # Block the request if an active exchange exists
     if active_exchange:
         return redirect(url_for('view_listing', id=id))
         
-    # Determine roles based on listing type
     if listing.type == 'offer':
         helper_id = listing.user_id
         req_id = current_user.id
@@ -249,8 +243,6 @@ def edit_profile():
         current_user.name = request.form.get('name')
         current_user.ward = request.form.get('ward')
         current_user.bio = request.form.get('bio')
-        
-        # Saves the chosen avatar style from the form (defaults to initials)
         current_user.avatar_style = request.form.get('avatar_style', 'initials')
         
         custom_seed = request.form.get('avatar_seed')
