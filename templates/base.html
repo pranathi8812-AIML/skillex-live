@@ -12,8 +12,8 @@
         :root {
             --bg-base: #060913; 
             --surface-glass: rgba(17, 24, 39, 0.65);
-            --surface-border: rgba(255, 255, 255, 0.06);
-            --surface-hover: rgba(255, 255, 255, 0.12);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(255, 255, 255, 0.15);
             --accent-indigo: #6366F1;
             --accent-violet: #8B5CF6;
             --accent-teal: #10B981;
@@ -37,21 +37,15 @@
 
         /* Ambient Animated Background Blobs */
         .ambient-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden; pointer-events: none;
         }
         .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.35;
-            animation: floatBlob 20s infinite alternate ease-in-out;
+            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.25;
+            animation: floatBlob 25s infinite alternate ease-in-out;
         }
-        .blob-1 { top: -10%; left: -10%; width: 45vw; height: 45vw; background: rgba(99, 102, 241, 0.25); }
-        .blob-2 { bottom: -20%; right: -10%; width: 55vw; height: 55vw; background: rgba(16, 185, 129, 0.15); animation-delay: -5s; animation-direction: alternate-reverse; }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(139, 92, 246, 0.2); }
+        .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: rgba(16, 185, 129, 0.15); animation-delay: -5s; animation-direction: alternate-reverse; }
 
         @keyframes floatBlob {
             0% { transform: translate(0, 0) scale(1); }
@@ -61,33 +55,29 @@
         /* Glass Surfaces */
         .glass-card {
             background: var(--surface-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--surface-border);
             border-radius: 20px;
             padding: 32px;
-            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.4);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
-            overflow: hidden;
         }
 
         /* Interactive Buttons */
         .btn-primary, .btn-secondary, .btn-teal {
             display: inline-flex; align-items: center; justify-content: center;
-            gap: 8px; padding: 12px 24px; border-radius: 10px;
+            gap: 8px; padding: 10px 22px; border-radius: 10px;
             font-weight: 600; font-size: 0.95rem; cursor: pointer;
             text-decoration: none; border: none; color: white;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; overflow: hidden;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--surface-border);
             color: var(--text-main);
         }
@@ -95,63 +85,53 @@
             background: linear-gradient(135deg, #059669, #10B981);
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
         }
-
-        /* Button Hover & Click States */
         .btn-primary:hover, .btn-teal:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
             filter: brightness(1.1);
         }
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             border-color: var(--surface-hover);
             transform: translateY(-2px);
         }
-        .btn-primary:active, .btn-secondary:active, .btn-teal:active {
-            transform: translateY(1px) scale(0.97);
-        }
 
-        /* Animated Navbar */
+        /* Navbar & Entrance Animation */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 5%; background: rgba(6, 9, 19, 0.8);
+            padding: 16px 5%; background: rgba(6, 9, 19, 0.75);
             backdrop-filter: blur(24px); border-bottom: 1px solid var(--surface-border);
             position: sticky; top: 0; z-index: 1000;
-            animation: fadeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: navFadeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes navFadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Brand Logo Animation */
+        /* NEW INTERLOCKING BRAND MARK */
         .nav-brand {
             display: flex; align-items: center; gap: 12px;
             font-size: 1.4rem; font-weight: 700; color: var(--text-main);
             text-decoration: none; letter-spacing: -0.5px;
         }
-        .brand-icon {
-            width: 32px; height: 32px;
-            overflow: visible;
-        }
-        .brand-part-1 { animation: exchangeSlide1 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        .brand-part-2 { animation: exchangeSlide2 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        .brand-icon { width: 34px; height: 34px; overflow: visible; }
         
-        .nav-brand:hover .brand-part-1 { animation-duration: 1.5s; filter: drop-shadow(0 0 8px var(--accent-indigo)); }
-        .nav-brand:hover .brand-part-2 { animation-duration: 1.5s; filter: drop-shadow(0 0 8px var(--accent-violet)); }
-        .nav-brand:active { transform: scale(0.95); transition: 0.1s; }
-
-        @keyframes exchangeSlide1 {
-            0%, 10% { transform: translateX(0) scale(1); }
-            30% { transform: translateX(8px) scale(1.1); }
-            45% { transform: translateX(4px) scale(1); opacity: 0.8; }
-            70%, 100% { transform: translateX(0) scale(1); }
+        .brand-shape-left { animation: interlockLeft 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        .brand-shape-right { animation: interlockRight 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        
+        @keyframes interlockLeft {
+            0%, 100% { transform: translateX(0); stroke: var(--accent-violet); filter: drop-shadow(0 0 0 transparent); }
+            40%, 60% { transform: translateX(5px); stroke: #A78BFA; filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.6)); }
         }
-        @keyframes exchangeSlide2 {
-            0%, 10% { transform: translateX(0) scale(1); }
-            30% { transform: translateX(-8px) scale(1.1); }
-            45% { transform: translateX(-4px) scale(1); opacity: 0.8; }
-            70%, 100% { transform: translateX(0) scale(1); }
+        @keyframes interlockRight {
+            0%, 100% { transform: translateX(0); stroke: var(--accent-indigo); filter: drop-shadow(0 0 0 transparent); }
+            40%, 60% { transform: translateX(-5px); stroke: #818CF8; filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.6)); }
         }
+        .nav-brand:hover .brand-shape-left, .nav-brand:hover .brand-shape-right { animation-duration: 1.5s; }
 
         /* Nav Links with Hover Sweep */
-        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-links a.nav-item {
             color: var(--text-muted); text-decoration: none;
             font-size: 0.95rem; font-weight: 500; position: relative;
@@ -160,8 +140,7 @@
         .nav-links a.nav-item::after {
             content: ''; position: absolute; bottom: 0; left: 0;
             width: 0; height: 2px; background: var(--accent-indigo);
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 2px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2px;
         }
         .nav-links a.nav-item:hover { color: var(--text-main); }
         .nav-links a.nav-item:hover::after { width: 100%; }
@@ -172,36 +151,24 @@
             color: var(--text-main); font-size: 1.5rem; cursor: pointer;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .menu-toggle { display: block; }
             .nav-links {
                 position: absolute; top: 100%; left: 0; width: 100%;
-                flex-direction: column; background: rgba(17, 24, 39, 0.95);
+                flex-direction: column; background: rgba(17, 24, 39, 0.98);
                 backdrop-filter: blur(20px); border-bottom: 1px solid var(--surface-border);
                 padding: 0; max-height: 0; overflow: hidden;
                 transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .nav-links.active { max-height: 400px; padding: 20px 0; }
+            .nav-links.active { max-height: 500px; padding: 20px 0; }
             .nav-links a.nav-item, .nav-links .btn-primary, .nav-links .btn-teal {
                 width: 90%; text-align: center; margin: 5px auto;
             }
         }
 
-        /* Entrance Animations */
-        @keyframes fadeDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .main-content {
-            flex-grow: 1; padding: 40px 5%; max-width: 1400px; width: 100%; margin: 0 auto;
-        }
-
-        /* Accessibility: Reduced Motion */
+        .main-content { flex-grow: 1; padding: 40px 5%; max-width: 1400px; width: 100%; margin: 0 auto; }
+        
+        /* Accessibility */
         @media (prefers-reduced-motion: reduce) {
             *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
             .blob { animation: none !important; }
@@ -210,20 +177,19 @@
 </head>
 
 <body>
-    <!-- Animated Ambient Background -->
+    <!-- Ambient Background Layer -->
     <div class="ambient-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
     </div>
 
+    <!-- NAVBAR -->
     <nav class="navbar">
         <a href="{{ url_for('home') }}" class="nav-brand">
-            <!-- Bespoke Skillex Animated Brand Mark -->
+            <!-- Interlocking Skills Logo -->
             <svg class="brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect class="brand-part-1" x="4" y="10" width="12" height="12" rx="3" stroke="#8B5CF6" stroke-width="2.5" fill="rgba(139, 92, 246, 0.1)"/>
-                <rect class="brand-part-2" x="16" y="10" width="12" height="12" rx="3" stroke="#6366F1" stroke-width="2.5" fill="rgba(99, 102, 241, 0.1)"/>
-                <path class="brand-part-1" d="M10 16 H 16" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round"/>
-                <path class="brand-part-2" d="M16 16 H 22" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round"/>
+                <path class="brand-shape-left" d="M11 10 L17 16 L11 22" stroke="var(--accent-violet)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="brand-shape-right" d="M21 10 L15 16 L21 22" stroke="var(--accent-indigo)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             Skillex
         </a>
@@ -233,7 +199,10 @@
         </button>
 
         <div class="nav-links" id="navMenu">
+            <!-- LEADERBOARD & ALL ORIGINAL LINKS -->
             <a href="{{ url_for('board') }}" class="nav-item">Browse Skills</a>
+            <a href="{{ url_for('leaderboard') }}" class="nav-item">Leaderboard</a>
+            
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('post_listing') }}" class="nav-item">Post Skill</a>
                 <a href="{{ url_for('paid_services') }}" class="btn-teal">Hire Help</a>
@@ -247,4 +216,35 @@
         </div>
     </nav>
 
+    <!-- MAIN CONTENT BLOCK (CRITICAL FOR YOUR APP TO WORK) -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FLOATING HELP BUTTON / MODAL OVERLAY -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button onclick="document.getElementById('helpModal').style.display='flex'" class="glass-card" style="border-radius: 50%; width: 50px; height: 50px; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: transform 0.3s; padding: 0;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fa-solid fa-question"></i>
+        </button>
+    </div>
+
+    <!-- HELP OVERLAY MODAL -->
+    <div id="helpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="glass-card" style="max-width: 500px; width: 90%; position: relative; animation: fadeUp 0.3s ease-out;">
+            <button onclick="document.getElementById('helpModal').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 style="margin-bottom: 15px; color: var(--accent-violet);">
+                <i class="fa-solid fa-lightbulb"></i> How Skillex Works
+            </h2>
+            <ul style="color: var(--text-muted); line-height: 1.8; margin-left: 20px; margin-bottom: 25px;">
+                <li><strong>Community Credits:</strong> Everyone starts with credits. Earn more by helping neighbors, and spend them when you need a hand.</li>
+                <li><strong>Skill Board:</strong> Trade casual talents like tutoring, cooking, or yard work without using real money.</li>
+                <li><strong>Paid Services:</strong> Need a certified professional? Use the "Hire Help" section to pay directly for skilled labor.</li>
+                <li><strong>Privacy First:</strong> You must send a connection request before you can chat with another user.</li>
+            </ul>
+            <button onclick="document.getElementById('helpModal').style.display='none'" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem;">Got it!</button>
+        </div>
+    </div>
+</body>
 </html>

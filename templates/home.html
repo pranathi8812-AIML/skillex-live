@@ -11,7 +11,7 @@
         .welcome-card { grid-column: 1 / -1; }
     }
 
-    /* Staggered Load - FIXED */
+    /* Staggered Load - FIXED OPACITY BUG */
     .anim-1 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.1s; opacity: 0; }
     .anim-2 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.25s; opacity: 0; }
     .anim-3 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.4s; opacity: 0; }
@@ -20,6 +20,7 @@
         0% { opacity: 0; transform: translateY(30px); }
         100% { opacity: 1; transform: translateY(0); }
     }
+
     /* Welcome Hero Card */
     .welcome-card {
         display: flex; flex-direction: column; justify-content: center; text-align: center;
@@ -56,36 +57,34 @@
         box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.4);
         border-color: rgba(255, 255, 255, 0.15);
     }
-    .mode-card:hover::after { opacity: 1; }
     
     /* Hover Glow effect */
     .mode-card::after {
         content: ''; position: absolute; inset: 0; border-radius: 20px;
         box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
     }
+    .mode-card:hover::after { opacity: 1; }
 
-    /* Animated Card Icons */
+    /* Animated Original Icons */
     .card-icon-container {
         width: 64px; height: 64px; border-radius: 16px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
         margin-bottom: 24px; position: relative;
     }
-    .icon-indigo { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); }
-    .icon-teal { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .icon-indigo { background: rgba(99, 102, 241, 0.1); color: var(--accent-indigo); border: 1px solid rgba(99, 102, 241, 0.2); }
+    .icon-teal { background: rgba(16, 185, 129, 0.1); color: var(--accent-teal); border: 1px solid rgba(16, 185, 129, 0.2); }
 
-    /* SVG Animations */
-    .mode-card:hover .exchange-path-1 { animation: connectSlide1 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-    .mode-card:hover .exchange-path-2 { animation: connectSlide2 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+    /* Hover animations for original FontAwesome icons */
+    .mode-card:hover .icon-indigo i { animation: gentleBounce 2s ease-in-out infinite; }
+    .mode-card:hover .icon-teal i { animation: gentlePulse 2s ease-in-out infinite; }
     
-    @keyframes connectSlide1 { 50% { transform: translate(3px, -3px); } }
-    @keyframes connectSlide2 { 50% { transform: translate(-3px, 3px); } }
-
-    .pulse-ring { animation: radarPulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; transform-origin: center; }
-    .pulse-ring-2 { animation: radarPulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.5s; transform-origin: center; }
-    
-    @keyframes radarPulse {
-        0% { transform: scale(0.5); opacity: 0.8; }
-        100% { transform: scale(2.5); opacity: 0; }
+    @keyframes gentleBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+    }
+    @keyframes gentlePulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
     }
 
     .mode-card h2 { font-size: 1.6rem; margin-bottom: 12px; font-weight: 600; letter-spacing: -0.5px; }
@@ -102,50 +101,40 @@
 
 <div class="home-grid">
     
-    <!-- HERO: WELCOME CARD -->
+    <!-- ORIGINAL HERO: WELCOME CARD -->
     <div class="glass-card welcome-card anim-1">
         <span class="welcome-badge">Welcome to Skillex</span>
         <h1>Neighbors <span class="text-gradient">Helping</span> Neighbors</h1>
-        <p>The premium hyperlocal skill and labor exchange. Trade your talents using virtual community credits, or instantly hire local professionals for bigger jobs. Connect securely and strengthen your community.</p>
+        <p>The hyperlocal skill and labor exchange platform. Trade your talents using virtual community credits, or instantly hire local professionals for bigger jobs. Build trust and strengthen your community.</p>
         
         <div class="hero-actions">
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('board') }}" class="btn-primary"><i class="fa-solid fa-compass"></i> Explore Skills</a>
                 <a href="{{ url_for('post_listing') }}" class="btn-secondary"><i class="fa-solid fa-pen-to-square"></i> Post a Skill</a>
             {% else %}
-                <a href="{{ url_for('register') }}" class="btn-primary">Join Community</a>
-                <a href="{{ url_for('board') }}" class="btn-secondary">Browse Board</a>
+                <a href="{{ url_for('register') }}" class="btn-primary"><i class="fa-solid fa-user-plus"></i> Register</a>
+                <a href="{{ url_for('board') }}" class="btn-secondary"><i class="fa-solid fa-compass"></i> Browse Board</a>
             {% endif %}
         </div>
     </div>
 
-    <!-- CARD 1: EXCHANGE SKILLS -->
+    <!-- ORIGINAL CARD 1: EXCHANGE SKILLS -->
     <div class="glass-card mode-card anim-2">
         <div class="card-icon-container icon-indigo">
-            <!-- Animated Exchange SVG -->
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="var(--accent-indigo)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path class="exchange-path-1" d="M8 12 H 20 L 16 8" />
-                <path class="exchange-path-2" d="M24 20 H 12 L 16 24" />
-            </svg>
+            <i class="fa-solid fa-handshake-simple"></i>
         </div>
         <h2>Exchange Skills</h2>
-        <p>Trade your talents with neighbors using our secure community credit ledger. Offer what you know, request what you need—no money involved.</p>
+        <p>Trade your talents with neighbors using community credits. No money involved.</p>
         <a href="{{ url_for('board') }}" class="btn-primary btn-full">Go to Skill Board</a>
     </div>
 
-    <!-- CARD 2: HIRE NEARBY HELP -->
+    <!-- ORIGINAL CARD 2: HIRE NEARBY HELP -->
     <div class="glass-card mode-card anim-3">
         <div class="card-icon-container icon-teal">
-            <!-- Animated Location Radar SVG -->
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="var(--accent-teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle class="pulse-ring" cx="16" cy="16" r="6" stroke="var(--accent-teal)" stroke-width="1" opacity="0" />
-                <circle class="pulse-ring-2" cx="16" cy="16" r="6" stroke="var(--accent-teal)" stroke-width="1" opacity="0" />
-                <path d="M16 26 C16 26 22 19 22 14 C22 10.686 19.314 8 16 8 C12.686 8 10 10.686 10 14 C10 19 16 26 16 26 Z" fill="var(--bg-base)" />
-                <circle cx="16" cy="14" r="2" />
-            </svg>
+            <i class="fa-solid fa-money-bill-wave"></i>
         </div>
         <h2>Hire Nearby Help</h2>
-        <p>Need a certified professional? Pay directly for dedicated local services like plumbing, moving, or deep cleaning. Keep the money in your community.</p>
+        <p>Pay directly for professional local services like plumbing, tutoring, or cleaning.</p>
         <a href="{{ url_for('paid_services') }}" class="btn-teal btn-full">View Paid Services</a>
     </div>
 
