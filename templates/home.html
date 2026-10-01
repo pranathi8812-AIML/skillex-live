@@ -2,16 +2,15 @@
 
 {% block content %}
 <style>
-    /* Content Layout */
+    /* ================= CONTENT LAYOUT ================= */
     .home-grid {
         display: grid; grid-template-columns: 1fr; gap: 24px; width: 100%;
     }
     @media (min-width: 850px) {
         .home-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
-        .welcome-card { grid-column: 1 / -1; }
     }
 
-    /* Staggered Load - FIXED OPACITY BUG */
+    /* ENTRANCE ANIMATIONS */
     .anim-1 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.1s; opacity: 0; }
     .anim-2 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.25s; opacity: 0; }
     .anim-3 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.4s; opacity: 0; }
@@ -21,51 +20,145 @@
         100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* Welcome Hero Card */
-    .welcome-card {
-        display: flex; flex-direction: column; justify-content: center; text-align: center;
-        padding: 56px 24px; border-top: 1px solid rgba(255,255,255,0.1);
-        background: radial-gradient(120% 120% at 50% 0%, rgba(30, 41, 59, 0.4) 0%, transparent 100%);
+    /* ================= NEW HERO SECTION ================= */
+    .hero-section {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        padding: 60px 20px 80px 20px;
+    }
+
+    .hero-text-side {
+        flex: 1;
+        max-width: 650px;
+        text-align: left;
+    }
+
+    /* Small Pill Badge */
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(99, 102, 241, 0.15);
+        color: var(--accent-indigo);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    /* Massive Bold Typography */
+    .hero-text-side h1 {
+        font-size: clamp(3rem, 6vw, 5rem);
+        font-weight: 800;
+        line-height: 1.05;
+        margin-bottom: 24px;
+        letter-spacing: -1.5px;
+        color: white;
+    }
+
+    .text-gold {
+        color: #F59E0B; /* Warm orange/gold from the image */
+    }
+
+    .hero-text-side p {
+        font-size: clamp(1.05rem, 2vw, 1.15rem);
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 32px;
+        max-width: 550px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+
+    /* Trust Badges (Bottom of Hero Text) */
+    .trust-badges {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
     }
     
-    /* Subtle background shimmer */
-    .welcome-card::before {
-        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-        animation: shimmer 8s infinite linear; pointer-events: none;
-    }
-    @keyframes shimmer { 100% { left: 200%; } }
-
-    .welcome-badge {
-        display: inline-block; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2);
-        color: var(--accent-indigo); padding: 6px 14px; border-radius: 20px;
-        font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-        margin-bottom: 24px; align-self: center;
+    .trust-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
     }
 
-    .welcome-card h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 16px; letter-spacing: -1px; }
-    .text-gradient { background: linear-gradient(135deg, var(--text-main), var(--accent-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .welcome-card p { font-size: clamp(1.05rem, 2vw, 1.2rem); color: var(--text-muted); max-width: 650px; margin: 0 auto 32px auto; line-height: 1.6; }
-    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .trust-badge i { color: #F59E0B; }
 
-    /* Mode Action Cards */
+    /* ================= FLOATING GRAPHIC SIDE ================= */
+    .hero-visual-side {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* The glowing ring background */
+    .glow-ring {
+        position: absolute;
+        width: clamp(250px, 30vw, 400px);
+        height: clamp(250px, 30vw, 400px);
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        border-radius: 50%;
+        z-index: 1;
+        animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    /* The floating gold logo */
+    .floating-logo {
+        font-size: clamp(6rem, 12vw, 12rem);
+        color: #F59E0B;
+        z-index: 2;
+        filter: drop-shadow(0 15px 25px rgba(245, 158, 11, 0.3));
+        animation: floatLogo 4s ease-in-out infinite;
+    }
+
+    @keyframes floatLogo {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    /* ================= BOTTOM CARDS (EXISTING) ================= */
     .mode-card {
         display: flex; flex-direction: column; height: 100%; position: relative;
     }
     .mode-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5);
         border-color: rgba(255, 255, 255, 0.15);
     }
-    
-    /* Hover Glow effect */
     .mode-card::after {
         content: ''; position: absolute; inset: 0; border-radius: 20px;
         box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
     }
     .mode-card:hover::after { opacity: 1; }
 
-    /* Animated Original Icons */
     .card-icon-container {
         width: 64px; height: 64px; border-radius: 16px;
         display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
@@ -74,61 +167,81 @@
     .icon-indigo { background: rgba(99, 102, 241, 0.1); color: var(--accent-indigo); border: 1px solid rgba(99, 102, 241, 0.2); }
     .icon-teal { background: rgba(16, 185, 129, 0.1); color: var(--accent-teal); border: 1px solid rgba(16, 185, 129, 0.2); }
 
-    /* Hover animations for original FontAwesome icons */
     .mode-card:hover .icon-indigo i { animation: gentleBounce 2s ease-in-out infinite; }
     .mode-card:hover .icon-teal i { animation: gentlePulse 2s ease-in-out infinite; }
     
-    @keyframes gentleBounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-    @keyframes gentlePulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-    }
+    @keyframes gentleBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes gentlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
     .mode-card h2 { font-size: 1.6rem; margin-bottom: 12px; font-weight: 600; letter-spacing: -0.5px; }
     .mode-card p { color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; flex-grow: 1; }
     .btn-full { width: 100%; padding: 14px; font-size: 1rem; }
 
-    /* Mobile Refinements */
-    @media (max-width: 480px) {
-        /* Mobile Refinements (FIXED) */
+    /* ================= MOBILE RESPONSIVENESS ================= */
+    @media (max-width: 950px) {
+        .hero-section {
+            flex-direction: column-reverse; /* Puts the graphic above the text on mobile */
+            text-align: center;
+            padding: 40px 10px;
+            gap: 60px;
+        }
+        .hero-text-side { text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .hero-actions, .trust-badges { justify-content: center; }
+    }
+
     @media (max-width: 480px) {
         .home-grid { gap: 16px; }
         .glass-card { padding: 24px 16px; border-radius: 16px; }
-        .welcome-card h1 { font-size: 2.2rem; margin-bottom: 12px; }
-        .welcome-card p { font-size: 1rem; margin-bottom: 24px; }
-        
         .hero-actions { width: 100%; flex-direction: column; gap: 12px; }
         .hero-actions a { width: 100%; justify-content: center; margin: 0; }
-        
-        .card-icon-container { width: 54px; height: 54px; font-size: 1.5rem; margin-bottom: 16px; }
-        .mode-card h2 { font-size: 1.4rem; }
-    }
+        .trust-badges { flex-direction: column; width: 100%; }
+        .trust-badge { justify-content: center; }
     }
 </style>
 
 <div class="home-grid">
     
-    <!-- ORIGINAL HERO: WELCOME CARD -->
-    <div class="glass-card welcome-card anim-1">
-        <span class="welcome-badge">Welcome to Skillex</span>
-        <h1>Neighbors <span class="text-gradient">Helping</span> Neighbors</h1>
-        <p>The hyperlocal skill and labor exchange platform. Trade your talents using virtual community credits, or instantly hire local professionals for bigger jobs. Build trust and strengthen your community.</p>
+    <!-- NEW REDESIGNED TWO-COLUMN HERO SECTION -->
+    <div class="hero-section anim-1">
         
-        <div class="hero-actions">
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('board') }}" class="btn-primary"><i class="fa-solid fa-compass"></i> Explore Skills</a>
-                <a href="{{ url_for('post_listing') }}" class="btn-secondary"><i class="fa-solid fa-pen-to-square"></i> Post a Skill</a>
-            {% else %}
-                <a href="{{ url_for('register') }}" class="btn-primary"><i class="fa-solid fa-user-plus"></i> Register</a>
-                <a href="{{ url_for('board') }}" class="btn-secondary"><i class="fa-solid fa-compass"></i> Browse Board</a>
-            {% endif %}
+        <!-- Left Side: Typography & Buttons -->
+        <div class="hero-text-side">
+            <span class="hero-badge"><i class="fa-solid fa-bolt"></i> Community First Platform</span>
+            
+            <h1>
+                Share Skills.<br>
+                <span class="text-gradient text-gold">Earn Credits.</span><br>
+                Build Community.
+            </h1>
+            
+            <p>Skillex connects neighbours to exchange skills — tutoring, repairs, cooking, and more. No money needed, just community trust.</p>
+            
+            <div class="hero-actions">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('board') }}" class="btn-primary"><i class="fa-solid fa-compass"></i> Browse Skills</a>
+                    <a href="{{ url_for('post_listing') }}" class="btn-secondary"><i class="fa-solid fa-pen-to-square"></i> Post a Skill</a>
+                {% else %}
+                    <a href="{{ url_for('board') }}" class="btn-primary">Browse Skills</a>
+                    <a href="{{ url_for('register') }}" class="btn-secondary">Join Free</a>
+                {% endif %}
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-badge"><i class="fa-solid fa-shield-halved"></i> 100% Free</div>
+                <div class="trust-badge"><i class="fa-solid fa-location-dot"></i> Neighbourhood Only</div>
+                <div class="trust-badge"><i class="fa-solid fa-coins"></i> Credit Based</div>
+            </div>
         </div>
+
+        <!-- Right Side: Animated Floating Graphic -->
+        <div class="hero-visual-side">
+            <div class="glow-ring"></div>
+            <i class="fa-solid fa-users floating-logo"></i>
+        </div>
+
     </div>
 
-    <!-- ORIGINAL CARD 1: EXCHANGE SKILLS -->
+    <!-- ORIGINAL CARD 1: EXCHANGE SKILLS (PRESERVED) -->
     <div class="glass-card mode-card anim-2">
         <div class="card-icon-container icon-indigo">
             <i class="fa-solid fa-handshake-simple"></i>
@@ -138,7 +251,7 @@
         <a href="{{ url_for('board') }}" class="btn-primary btn-full">Go to Skill Board</a>
     </div>
 
-    <!-- ORIGINAL CARD 2: HIRE NEARBY HELP -->
+    <!-- ORIGINAL CARD 2: HIRE NEARBY HELP (PRESERVED) -->
     <div class="glass-card mode-card anim-3">
         <div class="card-icon-container icon-teal">
             <i class="fa-solid fa-money-bill-wave"></i>
