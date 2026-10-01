@@ -75,7 +75,7 @@
             <i class="fa-solid fa-hourglass-half" style="color: #fbbf24;"></i> Waiting for provider to complete the exchange.
         </p>
     {% endif %}
-{% else %}
+{% else %} 
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 0.85rem; color: var(--accent-green); margin: 0;"><i class="fa-solid fa-check"></i> Exchange Completed</p>
                             <a href="{{ url_for('submit_review', id=item.exchange.id) }}" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; background: rgba(251, 191, 36, 0.2); color: #fbbf24; text-decoration: none; border: 1px solid #fbbf24;"><i class="fa-solid fa-star"></i> Leave Review</a>
