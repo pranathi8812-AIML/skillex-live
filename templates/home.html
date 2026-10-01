@@ -11,11 +11,15 @@
         .welcome-card { grid-column: 1 / -1; }
     }
 
-    /* Staggered Load */
-    .anim-1 { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s; opacity: 0; }
-    .anim-2 { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.25s; opacity: 0; }
-    .anim-3 { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s; opacity: 0; }
+    /* Staggered Load - FIXED */
+    .anim-1 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.1s; opacity: 0; }
+    .anim-2 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.25s; opacity: 0; }
+    .anim-3 { animation: homeFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.4s; opacity: 0; }
 
+    @keyframes homeFadeUp {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
     /* Welcome Hero Card */
     .welcome-card {
         display: flex; flex-direction: column; justify-content: center; text-align: center;
