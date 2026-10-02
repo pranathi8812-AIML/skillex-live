@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="glass-card" style="max-width: 400px; margin: 50px auto; text-align: center;">
-    <h2 style="margin-bottom: 20px;">Create an Account</h2>
+<div class="glass-card" style="max-width: 480px; margin: 80px auto; text-align: center;">
+    <h2 style="margin-bottom: 30px;">Create an Account</h2>
     
-    <!-- This block displays the "Email already registered" error -->
+    <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div style="padding: 10px; margin-bottom: 15px; border-radius: 5px; background-color: {% if category == 'warning' %}#f59e0b{% else %}#3b82f6{% endif %}; color: white; font-size: 0.9rem;">
+          <div style="padding: 10px; margin-bottom: 20px; border-radius: 8px; background-color: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; color: #fcd34d; font-size: 0.9rem; text-align: left;">
             {{ message }}
           </div>
         {% endfor %}
@@ -15,27 +15,27 @@
     {% endwith %}
 
     <form method="POST" action="{{ url_for('register') }}">
-        <div class="form-group" style="text-align: left;">
-            <label>Full Name</label>
-            <input type="text" name="name" class="form-control" required>
+        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label style="color: var(--text-muted); display: block; margin-bottom: 8px;">Full Name</label>
+            <input type="text" name="name" class="form-control" style="background: rgba(0, 0, 0, 0.4); border: none; color: white; width: 100%; padding: 12px; border-radius: 8px;" required>
         </div>
-        <div class="form-group" style="text-align: left;">
-            <label>Email Address</label>
-            <input type="email" name="email" class="form-control" required>
+        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label style="color: var(--text-muted); display: block; margin-bottom: 8px;">Email Address</label>
+            <input type="email" name="email" class="form-control" style="background: rgba(0, 0, 0, 0.4); border: none; color: white; width: 100%; padding: 12px; border-radius: 8px;" required>
         </div>
-        <div class="form-group" style="text-align: left;">
-            <label>Password</label>
-            <input type="password" name="password" class="form-control" required>
+        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label style="color: var(--text-muted); display: block; margin-bottom: 8px;">Password</label>
+            <input type="password" name="password" class="form-control" style="background: rgba(0, 0, 0, 0.4); border: none; color: white; width: 100%; padding: 12px; border-radius: 8px;" required>
         </div>
-        <div class="form-group" style="text-align: left;">
-            <label>Location / Ward</label>
-            <input type="text" name="ward" class="form-control" required>
+        <div class="form-group" style="text-align: left; margin-bottom: 25px;">
+            <label style="color: var(--text-muted); display: block; margin-bottom: 8px;">Location / Ward</label>
+            <input type="text" name="ward" class="form-control" style="background: rgba(0, 0, 0, 0.4); border: none; color: white; width: 100%; padding: 12px; border-radius: 8px;" required>
         </div>
-        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; background: var(--accent-purple); border: none;">Register</button>
+        <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">Register</button>
     </form>
     
-    <p style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;">
-        Already have an account? <a href="{{ url_for('login') }}" style="color: var(--accent-purple); text-decoration: none;">Login here</a>
+    <p style="margin-top: 25px; color: var(--text-muted); font-size: 0.9rem;">
+        Already have an account? <a href="{{ url_for('login') }}" style="color: var(--text-muted); text-decoration: none;">Login here</a>
     </p>
 </div>
 {% endblock %}

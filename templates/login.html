@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="glass-card" style="max-width: 400px; margin: 50px auto; text-align: center;">
-    <h2 style="margin-bottom: 20px;">Welcome Back</h2>
+<div class="glass-card" style="max-width: 480px; margin: 80px auto; text-align: center;">
+    <h2 style="margin-bottom: 30px;">Welcome Back</h2>
     
-    <!-- This block displays the "Invalid credentials" error -->
+    <!-- Flash Messages (Styled to match the dark theme) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div style="padding: 10px; margin-bottom: 15px; border-radius: 5px; background-color: {% if category == 'danger' %}#ef4444{% else %}#3b82f6{% endif %}; color: white; font-size: 0.9rem;">
+          <div style="padding: 10px; margin-bottom: 20px; border-radius: 8px; background-color: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #fca5a5; font-size: 0.9rem; text-align: left;">
             {{ message }}
           </div>
         {% endfor %}
@@ -15,19 +15,19 @@
     {% endwith %}
 
     <form method="POST" action="{{ url_for('login') }}">
-        <div class="form-group" style="text-align: left;">
-            <label>Email Address</label>
-            <input type="email" name="email" class="form-control" required>
+        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label style="color: var(--text-muted); display: block; margin-bottom: 8px;">Email Address</label>
+            <input type="email" name="email" class="form-control" style="background: rgba(0, 0, 0, 0.4); border: none; color: white; width: 100%; padding: 12px; border-radius: 8px;" required>
         </div>
-        <div class="form-group" style="text-align: left;">
-            <label>Password</label>
-            <input type="password" name="password" class="form-control" required>
+        <div class="form-group" style="text-align: left; margin-bottom: 25px;">
+            <label style="color: var(--text-muted); display: block; margin-bottom: 8px;">Password</label>
+            <input type="password" name="password" class="form-control" style="background: rgba(0, 0, 0, 0.4); border: none; color: white; width: 100%; padding: 12px; border-radius: 8px;" required>
         </div>
-        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; background: var(--accent-purple); border: none;">Login</button>
+        <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">Login</button>
     </form>
     
-    <p style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;">
-        Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--accent-purple); text-decoration: none;">Register here</a>
+    <p style="margin-top: 25px; color: var(--text-muted); font-size: 0.9rem;">
+        Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--text-muted); text-decoration: none;">Register here</a>
     </p>
 </div>
 {% endblock %}
