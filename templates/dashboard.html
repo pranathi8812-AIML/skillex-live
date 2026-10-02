@@ -53,7 +53,7 @@
         <div class="glass-card">
             <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-handshake"></i> Active Exchanges</h3>
             {% for item in exchanges %}
-                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid {% if item.exchange.status == 'pending' %}var(--accent-purple){% else %}var(--accent-green){% endif %};">
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid {% if item.exchange.status in ['pending', 'accepted'] %}var(--accent-purple){% else %}var(--accent-green){% endif %};">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <span style="font-weight: bold;">{{ item.listing.title }}</span>
                         <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);">{{ item.exchange.status | title }}</span>
@@ -63,19 +63,19 @@
                         Cost: {{ item.listing.credits }} <i class="fa-solid fa-coins"></i>
                     </p>
                     
-                    {% if item.exchange.status == 'pending' %}
-                        {% if item.role | lower == 'provider' or item.role | lower == 'offerer' %}
+                    {% if item.exchange.status in ['pending', 'accepted'] %}
+                        {% if item.role == 'Helper' %}
                             <form action="{{ url_for('complete_exchange', id=item.exchange.id) }}" method="POST">
                                 <button type="submit" class="btn-primary btn-green" style="width: 100%; padding: 8px; font-size: 0.9rem;">
-                                    <i class="fa-solid fa-check"></i> Mark as Done & Claim Credits
+                                    <i class="fa-solid fa-check"></i> Mark as Done & Claim {{ item.listing.credits }} Credits
                                 </button>
                             </form>
                         {% else %}
                             <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin: 0;">
-                                <i class="fa-solid fa-hourglass-half" style="color: #fbbf24;"></i> Waiting for provider to complete the exchange.
+                                <i class="fa-solid fa-hourglass-half" style="color: #fbbf24;"></i> Waiting for Helper to complete the exchange.
                             </p>
                         {% endif %}
-                    {% else %} 
+                    {% elif item.exchange.status == 'completed' %} 
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 0.85rem; color: var(--accent-green); margin: 0;"><i class="fa-solid fa-check"></i> Exchange Completed</p>
                             <a href="{{ url_for('submit_review', id=item.exchange.id) }}" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; background: rgba(251, 191, 36, 0.2); color: #fbbf24; text-decoration: none; border: 1px solid #fbbf24;"><i class="fa-solid fa-star"></i> Leave Review</a>
