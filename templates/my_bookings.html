@@ -35,7 +35,16 @@
                             <a href="{{ url_for('handle_booking', id=item.booking.id, action='accept') }}" class="btn-primary btn-green" style="flex-grow: 1; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Accept</a>
                             <a href="{{ url_for('handle_booking', id=item.booking.id, action='cancel') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); flex-grow: 1; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Decline</a>
                         {% elif item.booking.status == 'accepted' %}
-                            <a href="{{ url_for('handle_booking', id=item.booking.id, action='complete') }}" class="btn-primary btn-green" style="flex-grow: 1; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Mark Completed</a>
+                            <a href="{{ url_for('handle_booking', id=item.booking.id, action='payment_done') }}" class="btn-primary" style="background: #10b981; border-color: #10b981; text-decoration: none; padding: 6px 14px; font-size: 0.85rem; font-weight: bold; flex-grow: 1; text-align: center;">
+                                <i class="fa-solid fa-money-bill-wave"></i> Money Transaction Done
+                            </a>
+                            <a href="{{ url_for('handle_booking', id=item.booking.id, action='cancel') }}" class="btn-primary" style="background: rgba(220, 38, 38, 0.8); flex-grow: 0; text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Cancel</a>
+                        {% elif item.booking.status == 'completed' %}
+                            <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">
+                                <i class="fa-solid fa-circle-check"></i> Paid & Completed (₹{{ item.service.price }})
+                            </span>
+                        {% elif item.booking.status == 'cancelled' %}
+                            <span style="color: #ef4444; font-size: 0.85rem;">Cancelled</span>
                         {% endif %}
                     </div>
                 </div>
@@ -62,11 +71,17 @@
                         <strong>Provider:</strong> <a href="{{ url_for('profile', id=item.provider.id) }}" style="color: white; text-decoration: underline;">{{ item.provider.name }}</a>
                     </p>
                     <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
-                        <strong>Cost:</strong> ${{ "%.2f"|format(item.service.price) }} {{ item.service.duration }}
+                        <strong>Cost:</strong> ₹{{ "%.2f"|format(item.service.price) }} {{ item.service.duration }}
                     </p>
                     
                     {% if item.booking.status == 'pending' or item.booking.status == 'accepted' %}
                         <a href="{{ url_for('handle_booking', id=item.booking.id, action='cancel') }}" class="btn-primary" style="display: block; background: rgba(220, 38, 38, 0.8); text-align: center; text-decoration: none; font-size: 0.9rem; padding: 8px;">Cancel Request</a>
+                    {% elif item.booking.status == 'completed' %}
+                        <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">
+                            <i class="fa-solid fa-circle-check"></i> Paid & Completed (₹{{ item.service.price }})
+                        </span>
+                    {% elif item.booking.status == 'cancelled' %}
+                        <span style="color: #ef4444; font-size: 0.85rem;">Cancelled</span>
                     {% endif %}
                 </div>
                 {% else %}

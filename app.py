@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
 from models import db, User, Listing, Exchange, CreditTransaction, Review, Message, MessageRequest, PaidService, PaidBooking, ServiceRequest, ServiceOffer
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import or_, and_
 from flask_socketio import SocketIO, emit, join_room
 
@@ -89,6 +89,7 @@ def logout():
 def dashboard():
     my_listings = Listing.query.filter_by(user_id=current_user.id).order_by(Listing.created_at.desc()).all()
     
+    # 1. Skill Barter Exchanges (Credit-based)
     my_exchanges = Exchange.query.filter(
         (Exchange.helper_id == current_user.id) | (Exchange.requester_id == current_user.id)
     ).order_by(Exchange.created_at.desc()).all()
@@ -101,9 +102,39 @@ def dashboard():
         role = "Helper" if current_user.id == ex.helper_id else "Requester"
         exchange_data.append({'exchange': ex, 'listing': lst, 'other_user': other_user, 'role': role})
         
+    # 2. Credit Transactions (Credits Only)
     transactions = CreditTransaction.query.filter_by(user_id=current_user.id).order_by(CreditTransaction.created_at.desc()).limit(5).all()
     
-    return render_template('dashboard.html', my_listings=my_listings, exchanges=exchange_data, transactions=transactions)
+    # 3. Paid Service History (Money Only - Recorded Separately)
+    completed_paid_bookings = PaidBooking.query.join(PaidService).filter(
+        (PaidService.provider_id == current_user.id) | (PaidBooking.customer_id == current_user.id),
+        PaidBooking.status == 'completed'
+    ).order_by(PaidBooking.completed_at.desc()).limit(10).all()
+
+    paid_history = []
+    for b in completed_paid_bookings:
+        svc = PaidService.query.get(b.service_id)
+        if current_user.id == svc.provider_id:
+            other_user = User.query.get(b.customer_id)
+            role = "Provider (Received Money)"
+        else:
+            other_user = User.query.get(svc.provider_id)
+            role = "Client (Paid Money)"
+            
+        paid_history.append({
+            'booking': b,
+            'service': svc,
+            'other_user': other_user,
+            'role': role,
+            'amount': svc.price,
+            'date': b.completed_at
+        })
+
+    return render_template('dashboard.html', 
+                           my_listings=my_listings, 
+                           exchanges=exchange_data, 
+                           transactions=transactions,
+                           paid_history=paid_history)
 
 @app.route('/listing/<int:id>/request', methods=['POST'])
 @login_required
@@ -158,7 +189,7 @@ def complete_exchange(id):
         helper.credits += listing.credits
         
         exchange.status = 'completed'
-        exchange.completed_at = datetime.utcnow()
+        exchange.completed_at = datetime.now(timezone.utc)
         listing.exchange_count += 1
         
         tx_spend = CreditTransaction(user_id=requester.id, amount=-listing.credits, reason=f"Received help for: {listing.title}")
@@ -373,7 +404,8 @@ def post_paid_service():
             price=float(request.form.get('price')),
             duration=request.form.get('duration'),
             location=request.form.get('location'),
-            availability=request.form.get('availability')
+            availability=request.form.get('availability'),
+            status='active'
         )
         db.session.add(new_service)
         db.session.commit()
@@ -435,15 +467,21 @@ def handle_booking(id, action):
     if current_user.id == service.provider_id:
         if action == 'accept' and booking.status == 'pending':
             booking.status = 'accepted'
-        elif action == 'complete' and booking.status == 'accepted':
+            flash("Booking accepted! You can mark the money transaction once payment is received.", "info")
+            
+        elif action in ['complete', 'payment_done'] and booking.status == 'accepted':
             booking.status = 'completed'
-            booking.completed_at = datetime.utcnow()
+            booking.completed_at = datetime.now(timezone.utc)
+            flash(f"Success! Money transaction of ₹{service.price} confirmed and recorded.", "success")
+            
         elif action == 'cancel' and booking.status in ['pending', 'accepted']:
             booking.status = 'cancelled'
+            flash("Booking cancelled.", "warning")
             
     elif current_user.id == booking.customer_id:
         if action == 'cancel' and booking.status in ['pending', 'accepted']:
             booking.status = 'cancelled'
+            flash("Booking request cancelled.", "warning")
             
     db.session.commit()
     return redirect(url_for('my_bookings'))
@@ -665,7 +703,7 @@ def handle_message(data):
     emit('receive_message', {
         'body': body,
         'sender_id': sender_id,
-        'sent_at': datetime.utcnow().strftime('%H:%M')
+        'sent_at': datetime.now(timezone.utc).strftime('%H:%M')
     }, room=room)
 
 if __name__ == '__main__':
