@@ -1,38 +1,33 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div style="max-width: 500px; margin: 0 auto;">
-    <div class="glass-card">
-        <h2 style="text-align: center; margin-bottom: 20px;">Welcome Back</h2>
-        
-        <!-- Google Sign In (UI Only for now) -->
-        <button class="btn-primary" style="width: 100%; background: white; color: black; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" style="width: 20px;">
-            Sign in with Google
-        </button>
+<div class="glass-card" style="max-width: 400px; margin: 50px auto; text-align: center;">
+    <h2 style="margin-bottom: 20px;">Welcome Back</h2>
+    
+    <!-- This block displays the "Invalid credentials" error -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="padding: 10px; margin-bottom: 15px; border-radius: 5px; background-color: {% if category == 'danger' %}#ef4444{% else %}#3b82f6{% endif %}; color: white; font-size: 0.9rem;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-        <div style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">
-            <hr style="border-color: var(--glass-border); margin-bottom: 10px;">
-            or login with email
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group" style="text-align: left;">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-control" required>
         </div>
-
-        <form action="{{ url_for('login') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-            <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Email Address</label>
-                <input type="email" name="email" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Password</label>
-                <input type="password" name="password" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
-            </div>
-
-            <button type="submit" class="btn-primary" style="margin-top: 10px; font-size: 1.1rem; padding: 12px;">Login</button>
-        </form>
-        
-        <p style="text-align: center; margin-top: 20px; color: var(--text-muted);">
-            Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--accent-purple); text-decoration: none;">Register here</a>
-        </p>
-    </div>
+        <div class="form-group" style="text-align: left;">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; background: var(--accent-purple); border: none;">Login</button>
+    </form>
+    
+    <p style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;">
+        Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--accent-purple); text-decoration: none;">Register here</a>
+    </p>
 </div>
 {% endblock %}
