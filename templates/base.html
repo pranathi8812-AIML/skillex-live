@@ -263,5 +263,92 @@
             <button onclick="document.getElementById('helpModal').style.display='none'" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem;">Got it!</button>
         </div>
     </div>
+
+<!-- ========================================== -->
+    <!-- BEGIN HELP BUTTON & MODAL -->
+    <!-- ========================================== -->
+    
+    <!-- Floating Help Button -->
+    <div id="helpBtn" style="position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--accent-purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); z-index: 1000; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        ?
+    </div>
+
+    <!-- Help Modal Overlay -->
+    <div id="helpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1001; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+        
+        <!-- Modal Content Card -->
+        <div class="glass-card" style="max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; position: relative; padding: 35px; border-top: 4px solid var(--accent-purple);">
+            
+            <button id="closeHelp" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 2rem; cursor: pointer; line-height: 1;">&times;</button>
+            
+            <h2 style="color: white; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                <i class="fa-solid fa-circle-question" style="color: var(--accent-purple);"></i> How to use Skillex
+            </h2>
+            
+            <div style="margin-bottom: 25px;">
+                <h4 style="color: white; margin-bottom: 8px;">1. The Two Economies 🪙</h4>
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin: 0;">Skillex has two distinct systems: <strong>Community Credits</strong> (barter your skills without using money) and <strong>Paid Services</strong> (hire professionals for direct real money).</p>
+            </div>
+
+            <div style="margin-bottom: 25px; border-left: 3px solid var(--accent-green); padding-left: 15px;">
+                <h4 style="color: var(--accent-green); margin-bottom: 8px;">2. Skill Barter (Credits) 🤝</h4>
+                <ol style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin: 0; padding-left: 15px;">
+                    <li><strong>Post:</strong> Create a Skill Listing offering your help.</li>
+                    <li><strong>Connect:</strong> Another user requests your skill. Accept their request in <em>Notifications</em>.</li>
+                    <li><strong>Message:</strong> Use the Chat feature to coordinate a time and place.</li>
+                    <li><strong>Complete:</strong> After helping, click "Mark as Done" in your <em>Dashboard</em>. The system automatically transfers credits to you!</li>
+                </ol>
+            </div>
+
+            <div style="margin-bottom: 25px; border-left: 3px solid #10b981; padding-left: 15px;">
+                <h4 style="color: #10b981; margin-bottom: 8px;">3. Paid Services 💸</h4>
+                <ol style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin: 0; padding-left: 15px;">
+                    <li><strong>Offer Service:</strong> Post a service with a ₹ price tag on the <em>Hire Nearby Help</em> board.</li>
+                    <li><strong>Get Booked:</strong> Clients book you. Go to <em>Manage Bookings</em> to Accept.</li>
+                    <li><strong>Get Paid:</strong> Do the job and collect payment directly (Cash/UPI).</li>
+                    <li><strong>Confirm:</strong> Click the green "Money Transaction Done" button to finalize the record.</li>
+                </ol>
+            </div>
+
+            <div style="border-left: 3px solid #f59e0b; padding-left: 15px;">
+                <h4 style="color: #f59e0b; margin-bottom: 8px;">4. Custom Service Requests 📝</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin: 0;">Can't find what you need? Post a <strong>Service Request</strong> with a budget. Local helpers will submit offers. Review their offers, accept the best one, get the job done, and pay the helper!</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Script to Handle Modal Open/Close -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const helpBtn = document.getElementById('helpBtn');
+            const helpModal = document.getElementById('helpModal');
+            const closeHelp = document.getElementById('closeHelp');
+
+            if (helpBtn && helpModal && closeHelp) {
+                // Open modal
+                helpBtn.addEventListener('click', () => {
+                    helpModal.style.display = 'flex';
+                });
+                
+                // Close modal on X
+                closeHelp.addEventListener('click', () => {
+                    helpModal.style.display = 'none';
+                });
+                
+                // Close modal when clicking outside the card
+                window.addEventListener('click', (e) => {
+                    if (e.target === helpModal) {
+                        helpModal.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <!-- ========================================== -->
+    <!-- END HELP BUTTON & MODAL -->
+    <!-- ========================================== -->
+
 </body>
 </html>
